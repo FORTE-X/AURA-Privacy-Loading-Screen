@@ -2,6 +2,18 @@
 
 This file records isolated feature work so changes can be reviewed before they are merged into `main` and published.
 
+## Candidate: Phone-only bottom controls
+
+Branch: `fix/mobile-only-bottom-controls`
+
+Status: **Under review — not merged into `main` and not published to the primary live site.**
+
+Changes:
+
+- Limited the compact bottom toolbar to screens `760px` wide or narrower.
+- Restored the complete sidebar on desktop browsers, desktop webviews, and wider tablets.
+- Removed coarse-pointer detection so touch-capable computers retain the desktop layout.
+
 ## Candidate: Mobile bottom controls
 
 Branch: `feature/mobile-bottom-controls`
