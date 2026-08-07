@@ -6,7 +6,7 @@ This file records isolated feature work so changes can be reviewed before they a
 
 Branch: `feature/mobile-bottom-controls`
 
-Status: **Under review — not merged into `main` and not published to the live site.**
+Status: **Approved and merged into `main`; production publication verified on August 7, 2026.**
 
 Changes:
 
