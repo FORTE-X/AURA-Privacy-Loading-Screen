@@ -35,6 +35,7 @@ export class ModelManager {
             fileName: file.name,
             fileType: file.name.split(".").pop().toUpperCase(),
             torsoMarker: null,
+            initialContainerQuaternion: modelContainer.quaternion.clone(),
             cameraView: {
 
                 position: cameraView.position.clone(),
@@ -122,6 +123,19 @@ export class ModelManager {
     getActiveModelContainer() {
 
         return this.activeModel?.modelContainer ?? null;
+
+    }
+
+    resetActiveModelRotation() {
+
+        if (!this.activeModel) return false;
+
+        this.activeModel.modelContainer.quaternion.copy(
+            this.activeModel.initialContainerQuaternion
+        );
+        this.activeModel.modelContainer.updateMatrixWorld(true);
+
+        return true;
 
     }
 

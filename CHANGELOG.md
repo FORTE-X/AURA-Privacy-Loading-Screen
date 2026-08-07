@@ -17,6 +17,7 @@ Changes:
 - Added a broader mobile/coarse-pointer breakpoint for phones that report large CSS viewport widths.
 - Preserved the complete desktop sidebar and all desktop controls.
 - Preserved model importing, torso estimation, markers, rotation, camera controls, and removal behavior.
+- Reset View now restores the model's original front-facing import rotation as well as the camera.
 
 Decision options:
 

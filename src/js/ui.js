@@ -55,6 +55,7 @@ pauseRotationBtn.addEventListener("click", () => {
 resetViewBtn.addEventListener("click", () => {
 
     restoreView(viewerState.savedView ?? viewerState.defaultView);
+    modelManager.resetActiveModelRotation();
 
 });
 
