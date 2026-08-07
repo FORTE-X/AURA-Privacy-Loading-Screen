@@ -125,42 +125,103 @@ button:disabled { cursor: not-allowed; opacity: .45; transform: none; filter: no
 }
 #viewport canvas { display: block; }
 
-@media (max-width: 760px) {
+@media (max-width: 900px), (pointer: coarse) and (max-width: 1100px) {
     #app {
-        flex-direction: column;
+        position: relative;
+        display: block;
     }
 
     #viewport {
-        order: 1;
-        flex: none;
-        width: 100%;
-        height: 62vh;
-        height: 62dvh;
-        min-height: 360px;
+        position: absolute;
+        inset: 0 0 calc(76px + env(safe-area-inset-bottom)) 0;
+        width: auto;
+        height: auto;
+        min-height: 0;
     }
 
     #sidebar {
-        order: 2;
+        position: fixed;
+        z-index: 20;
+        right: 0;
+        bottom: 0;
+        left: 0;
         width: 100%;
-        height: 38vh;
-        height: 38dvh;
-        padding: 14px;
-        gap: 12px;
+        height: calc(76px + env(safe-area-inset-bottom));
+        padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+        gap: 9px;
+        overflow: visible;
+        background: rgba(11, 10, 17, .94);
+        backdrop-filter: blur(18px);
         border-top: 1px solid rgba(243, 199, 224, .13);
         border-right: 0;
         box-shadow: 0 -16px 50px rgba(0, 0, 0, .28);
     }
 
-    .logo {
-        padding: 2px 4px 6px;
+    #sidebar > * {
+        display: none;
     }
 
-    .logo-name {
-        font-size: 20px;
+    #sidebar > .import-card,
+    #sidebar > .viewer-controls-card {
+        min-width: 0;
+        padding: 0;
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+        box-shadow: none;
+        backdrop-filter: none;
     }
 
-    .card {
-        padding: 14px;
+    #sidebar > .import-card {
+        display: block;
+    }
+
+    #sidebar > .viewer-controls-card {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 9px;
+    }
+
+    .import-card h3,
+    .viewer-controls-card h3,
+    #toggleTorsoMarkerBtn {
+        display: none;
+    }
+
+    #sidebar button {
+        height: 56px;
+        padding: 7px 5px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
         border-radius: 13px;
+        font-size: 0;
+        line-height: 1;
+        touch-action: manipulation;
+    }
+
+    #sidebar button::before {
+        font-size: 19px;
+        font-weight: 500;
+    }
+
+    #sidebar button::after {
+        content: attr(data-mobile-label);
+        font-size: 10px;
+        font-weight: 750;
+        letter-spacing: .04em;
+        text-transform: uppercase;
+    }
+
+    #uploadBtn::before { content: "+"; }
+    #pauseRotationBtn::before { content: "Ⅱ"; }
+    #resetViewBtn::before { content: "↺"; }
+
+    button:hover {
+        transform: none;
     }
 }

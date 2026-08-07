@@ -27,6 +27,9 @@ function updateRotationButton() {
     pauseRotationBtn.textContent = viewerState.autoRotateEnabled
         ? "Pause Rotation"
         : "Resume Rotation";
+    pauseRotationBtn.dataset.mobileLabel = viewerState.autoRotateEnabled
+        ? "Pause"
+        : "Resume";
 
 }
 
@@ -52,6 +55,7 @@ pauseRotationBtn.addEventListener("click", () => {
 resetViewBtn.addEventListener("click", () => {
 
     restoreView(viewerState.savedView ?? viewerState.defaultView);
+    modelManager.resetActiveModelRotation();
 
 });
 
