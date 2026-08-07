@@ -1,7 +1,7 @@
 import {
     scene,
     camera,
-    composer,
+    renderScene,
     controls
 } from "./scene.js";
 
@@ -31,7 +31,7 @@ function animate(currentTime) {
 
     controls.update();
 
-    composer.render();
+    renderScene();
 
 }
 

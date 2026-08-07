@@ -19,7 +19,7 @@ body {
     overflow: hidden;
 }
 
-#app { display: flex; height: 100vh; }
+#app { display: flex; height: 100vh; height: 100dvh; }
 
 #sidebar {
     width: 328px;
@@ -126,5 +126,41 @@ button:disabled { cursor: not-allowed; opacity: .45; transform: none; filter: no
 #viewport canvas { display: block; }
 
 @media (max-width: 760px) {
-    #sidebar { width: 285px; padding: 20px 15px; }
+    #app {
+        flex-direction: column;
+    }
+
+    #viewport {
+        order: 1;
+        flex: none;
+        width: 100%;
+        height: 62vh;
+        height: 62dvh;
+        min-height: 360px;
+    }
+
+    #sidebar {
+        order: 2;
+        width: 100%;
+        height: 38vh;
+        height: 38dvh;
+        padding: 14px;
+        gap: 12px;
+        border-top: 1px solid rgba(243, 199, 224, .13);
+        border-right: 0;
+        box-shadow: 0 -16px 50px rgba(0, 0, 0, .28);
+    }
+
+    .logo {
+        padding: 2px 4px 6px;
+    }
+
+    .logo-name {
+        font-size: 20px;
+    }
+
+    .card {
+        padding: 14px;
+        border-radius: 13px;
+    }
 }

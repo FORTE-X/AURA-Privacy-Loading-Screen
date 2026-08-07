@@ -240,8 +240,7 @@ export function loadModel(file, status) {
 
 function scheduleTorsoMarker(modelEntry) {
 
-    // Two frames ensure the uploaded model is rendered before estimation work.
-    requestAnimationFrame(() => requestAnimationFrame(() => {
+    const estimate = () => {
 
         if (!modelManager.models.some((entry) => entry.id === modelEntry.id)) {
 
@@ -278,6 +277,21 @@ function scheduleTorsoMarker(modelEntry) {
         } catch (error) {
 
             console.warn("Lightweight torso estimation failed.", error);
+
+        }
+
+    };
+
+    // Let the uploaded model paint before starting CPU-heavy torso estimation.
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+
+        if ("requestIdleCallback" in window) {
+
+            window.requestIdleCallback(estimate, { timeout: 800 });
+
+        } else {
+
+            window.setTimeout(estimate, 100);
 
         }
 

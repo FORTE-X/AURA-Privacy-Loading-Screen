@@ -8,6 +8,11 @@ import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment
 import { viewerState } from "./viewerState.js";
 
 const viewport = document.getElementById("viewport");
+const isMobileViewport = window.matchMedia("(max-width: 760px)").matches;
+const renderPixelRatio = Math.min(
+    window.devicePixelRatio,
+    isMobileViewport ? 1.25 : 2
+);
 
 export const scene = new THREE.Scene();
 scene.background = null;
@@ -23,14 +28,14 @@ export const camera = new THREE.PerspectiveCamera(
 camera.position.set(5, 5, 5);
 
 export const renderer = new THREE.WebGLRenderer({
-    antialias: true,
+    antialias: !isMobileViewport,
     alpha: true
 });
 
 renderer.setClearColor(0x000000, 0);
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setPixelRatio(renderPixelRatio);
 renderer.setSize(viewport.clientWidth, viewport.clientHeight);
-renderer.shadowMap.enabled = true;
+renderer.shadowMap.enabled = !isMobileViewport;
 renderer.shadowMap.type = THREE.PCFShadowMap;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 0.9;
@@ -45,21 +50,41 @@ environmentGenerator.dispose();
 
 viewport.appendChild(renderer.domElement);
 
-export const composer = new EffectComposer(renderer);
-const renderPass = new RenderPass(scene, camera);
-const bloomPass = new UnrealBloomPass(
-    new THREE.Vector2(viewport.clientWidth, viewport.clientHeight),
-    0.08,
-    0.3,
-    0.88
-);
-const outputPass = new OutputPass();
+export const composer = isMobileViewport
+    ? null
+    : new EffectComposer(renderer);
 
-composer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-composer.setSize(viewport.clientWidth, viewport.clientHeight);
-composer.addPass(renderPass);
-composer.addPass(bloomPass);
-composer.addPass(outputPass);
+if (composer) {
+
+    const renderPass = new RenderPass(scene, camera);
+    const bloomPass = new UnrealBloomPass(
+        new THREE.Vector2(viewport.clientWidth, viewport.clientHeight),
+        0.08,
+        0.3,
+        0.88
+    );
+    const outputPass = new OutputPass();
+
+    composer.setPixelRatio(renderPixelRatio);
+    composer.setSize(viewport.clientWidth, viewport.clientHeight);
+    composer.addPass(renderPass);
+    composer.addPass(bloomPass);
+    composer.addPass(outputPass);
+
+}
+
+export function renderScene() {
+
+    if (composer) {
+
+        composer.render();
+        return;
+
+    }
+
+    renderer.render(scene, camera);
+
+}
 
 export const controls = new OrbitControls(
     camera,
@@ -132,7 +157,7 @@ window.addEventListener("resize", () => {
         viewport.clientHeight
     );
 
-    composer.setSize(
+    composer?.setSize(
         viewport.clientWidth,
         viewport.clientHeight
     );
