@@ -1,12 +1,19 @@
 {
-  "name": "try3",
+  "name": "aura-silhouette",
   "version": "1.0.0",
-  "description": "",
-    "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "description": "Interactive Three.js body-scan visualization and torso analysis.",
+  "scripts": {
+    "dev": "parcel src/index.html",
+    "build": "node scripts/clean-build.mjs && parcel build src/index.html --dist-dir dist/client --public-url / --no-source-maps && node scripts/create-worker.mjs"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs"
+  "type": "module",
+  "dependencies": {
+    "three": "^0.184.0"
+  },
+  "devDependencies": {
+    "parcel": "^2.16.4"
+  }
 }
