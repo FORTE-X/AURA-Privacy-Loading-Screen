@@ -27,6 +27,9 @@ function updateRotationButton() {
     pauseRotationBtn.textContent = viewerState.autoRotateEnabled
         ? "Pause Rotation"
         : "Resume Rotation";
+    pauseRotationBtn.dataset.mobileLabel = viewerState.autoRotateEnabled
+        ? "Pause"
+        : "Resume";
 
 }
 
