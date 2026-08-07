@@ -1,0 +1,23 @@
+# Dependencies and package-manager caches
+node_modules/
+.parcel-cache/
+
+# Generated builds
+dist/
+build-*/
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+
+# Local Codex/agent workspace metadata
+.agents/
+.codex/
+
+# Editor and operating-system files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.log

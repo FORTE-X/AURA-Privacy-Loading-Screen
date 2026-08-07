@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+
+    <title>AURA Privacy Viewer</title>
+
+    <link rel="stylesheet"href="./css/style.css">
+
+</head>
+
+<body>
+
+<div id="app">
+
+    <aside id="sidebar">
+
+        <div class="logo">
+
+            <span class="logo-name">AURA</span>
+            <span class="logo-subtitle">Model Manager</span>
+
+        </div>
+
+        <div class="card model-card">
+
+            <h3>Imported Models</h3>
+
+            <div id="modelList" class="model-list">
+
+                <p class="model-list-empty">No imported models</p>
+
+            </div>
+
+        </div>
+
+        <div class="card">
+
+            <h3>Import Scan</h3>
+
+            <button id="uploadBtn">
+
+                Upload Body Scan
+
+            </button>
+
+            <input
+            type="file"
+            id="fileInput"
+            accept=".glb,.gltf,.obj,.fbx"
+            hidden>
+
+        </div>
+
+        <div class="card">
+
+            <h3>Privacy</h3>
+
+            <p id="status">
+
+                Waiting for upload...
+
+            </p>
+
+        </div>
+
+        <section class="card viewer-controls-card">
+            <h3>Viewer Controls</h3>
+
+            <button id="pauseRotationBtn" type="button">
+                Pause Rotation
+            </button>
+
+            <button id="resetViewBtn" type="button">
+                Reset View
+            </button>
+
+            <button id="toggleTorsoMarkerBtn" type="button" disabled>
+                Show Torso Marker
+            </button>
+        </section>
+
+        <section class="card navigation-help-card">
+            <h3>Navigation Help</h3>
+
+            <div class="help-row">
+                <span class="help-action">Left mouse drag</span>
+                <span class="help-description">Rotate view</span>
+            </div>
+
+            <div class="help-row">
+                <span class="help-action">Right mouse drag</span>
+                <span class="help-description">Pan view</span>
+            </div>
+
+            <div class="help-row">
+                <span class="help-action">Mouse wheel</span>
+                <span class="help-description">Zoom</span>
+            </div>
+
+            <div class="help-row">
+                <span class="help-action">Pause Rotation</span>
+                <span class="help-description">Stop or resume idle rotation</span>
+            </div>
+
+            <div class="help-row">
+                <span class="help-action">Reset View</span>
+                <span class="help-description">Return to the fitted front view</span>
+            </div>
+
+            <div class="help-row">
+                <span class="help-action">Torso Marker</span>
+                <span class="help-description">Show or hide the estimated torso bounds</span>
+            </div>
+        </section>
+
+    </aside>
+
+    <main id="viewport"></main>
+
+</div>
+
+<script type="module"
+src="./js/scripts.js"></script>
+
+</body>
+
+</html>

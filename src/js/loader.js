@@ -1,0 +1,334 @@
+import * as THREE from "three";
+
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader.js";
+import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader.js";
+
+import {
+    scene,
+    camera,
+    controls
+} from "./scene.js";
+
+import { ModelManager } from "./ModelManager.js";
+import { viewerState } from "./viewerState.js";
+import {
+    estimateTorsoBounds
+} from "./LightweightTorsoEstimator/LightweightTorsoEstimator.js";
+import {
+    TorsoMarker
+} from "./LightweightTorsoEstimator/TorsoMarker.js";
+
+const gltfLoader = new GLTFLoader();
+const objLoader = new OBJLoader();
+const fbxLoader = new FBXLoader();
+export const IMPORTED_MODEL_COLOR = 0x09070c;
+export const IMPORTED_MODEL_EMISSIVE = 0x010102;
+export const IMPORTED_MODEL_OPACITY = 1;
+export const IMPORTED_MODEL_ROUGHNESS = 0.22;
+export const IMPORTED_MODEL_METALNESS = 0.02;
+
+// Retained imported-model reference for existing consumers.
+export let currentModel = null;
+// The container owns idle rotation; its children remain aligned to the scan.
+export let currentModelContainer = null;
+
+export const modelManager = new ModelManager(scene, camera, controls);
+
+modelManager.subscribe((models, activeModel) => {
+
+    currentModel = activeModel?.model ?? null;
+    currentModelContainer = activeModel?.modelContainer ?? null;
+
+});
+
+modelManager.addCleanupHandler(() => {
+
+    viewerState.savedView = null;
+
+});
+
+export function removeActiveModel() {
+
+    return modelManager.removeActiveModel();
+
+}
+
+export function loadModel(file, status) {
+
+    const extension = file.name
+        .split(".")
+        .pop()
+        .toLowerCase();
+
+    const url = URL.createObjectURL(file);
+
+    let loader;
+
+    switch (extension) {
+
+        case "glb":
+        case "gltf":
+            loader = gltfLoader;
+            break;
+
+        case "obj":
+            loader = objLoader;
+            break;
+
+        case "fbx":
+            loader = fbxLoader;
+            break;
+
+        default:
+            status.textContent = "Unsupported File Type";
+            URL.revokeObjectURL(url);
+            return;
+
+    }
+
+    loader.load(
+
+        url,
+
+        (result) => {
+
+
+            // GLTF returns scene
+            const importedModel =
+                result.scene ? result.scene : result;
+
+            // Reset rotation
+            importedModel.rotation.set(0, 0, 0);
+
+            //--------------------------------------------------
+            // Calculate Bounding Box
+            //--------------------------------------------------
+
+            const box = new THREE.Box3().setFromObject(importedModel);
+
+            const center = box.getCenter(new THREE.Vector3());
+
+            importedModel.position.sub(center);
+
+            //--------------------------------------------------
+            // Place feet on the ground
+            //--------------------------------------------------
+
+            box.setFromObject(importedModel);
+
+            importedModel.position.y -= box.min.y;
+
+            //--------------------------------------------------
+            // Camera Fit
+            //--------------------------------------------------
+
+            box.setFromObject(importedModel);
+
+            const sphere = box.getBoundingSphere(
+                new THREE.Sphere()
+            );
+
+            const radius = sphere.radius;
+
+            const modelCenter = sphere.center;
+
+            const fov = THREE.MathUtils.degToRad(camera.fov);
+
+            let distance =
+                radius /
+                Math.sin(fov / 2);
+
+            // Bring camera slightly closer
+            distance *= 0.94;
+
+            camera.position.set(
+
+                modelCenter.x,
+
+                modelCenter.y,
+
+                modelCenter.z + distance
+
+            );
+
+            controls.target.copy(modelCenter);
+
+            controls.update();
+
+            //--------------------------------------------------
+            // Enable Shadows
+            //--------------------------------------------------
+
+            const importedMaterial = createImportedModelMaterial();
+            const replacedMaterials = new Set();
+
+            importedModel.traverse((child) => {
+
+                if (child.isMesh) {
+
+                    child.castShadow = true;
+                    child.receiveShadow = true;
+
+                    const sourceMaterials = Array.isArray(child.material)
+                        ? child.material
+                        : [child.material];
+
+                    sourceMaterials.forEach((material) => {
+
+                        if (material) replacedMaterials.add(material);
+
+                    });
+
+                    child.material = Array.isArray(child.material)
+                        ? sourceMaterials.map(() => importedMaterial)
+                        : importedMaterial;
+
+                }
+
+            });
+
+            disposeReplacedMaterials(replacedMaterials);
+
+            const cameraView = {
+
+                position: camera.position.clone(),
+                target: controls.target.clone()
+
+            };
+
+            const modelEntry = modelManager.addModel({
+
+                model: importedModel,
+                file,
+                cameraView
+
+            });
+
+            scheduleTorsoMarker(modelEntry);
+
+            viewerState.savedView = {
+
+                cameraPosition: camera.position.clone(),
+                controlsTarget: controls.target.clone(),
+                cameraZoom: camera.zoom
+
+            };
+
+            status.textContent = "Model Imported Successfully";
+
+            URL.revokeObjectURL(url);
+
+        },
+
+        undefined,
+
+        (error) => {
+
+            console.error(error);
+
+            status.textContent =
+                "Import Failed";
+
+            URL.revokeObjectURL(url);
+
+        }
+
+    );
+
+}
+
+function scheduleTorsoMarker(modelEntry) {
+
+    // Two frames ensure the uploaded model is rendered before estimation work.
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+
+        if (!modelManager.models.some((entry) => entry.id === modelEntry.id)) {
+
+            return;
+
+        }
+
+        try {
+
+            const estimation = estimateTorsoBounds(
+                modelEntry.model,
+                modelEntry.modelContainer
+            );
+            const marker = new TorsoMarker(estimation);
+
+            if (!modelManager.setTorsoMarker(modelEntry.id, marker)) return;
+
+            console.log("Lightweight torso estimate:", {
+                method: estimation.method,
+                slices: estimation.sliceCount,
+                excludedArmSamples: estimation.excludedArmSamples,
+                vertices: estimation.vertexCount,
+                center: estimation.bounds.getCenter(new THREE.Vector3()),
+                size: estimation.bounds.getSize(new THREE.Vector3())
+            });
+            console.log("Lightweight body landmarks:", {
+                leftBreast: marker.landmarks.positions.leftBreast,
+                rightBreast: marker.landmarks.positions.rightBreast,
+                pelvis: marker.landmarks.positions.pelvis,
+                leftButtock: marker.landmarks.positions.leftButtock,
+                rightButtock: marker.landmarks.positions.rightButtock
+            });
+
+        } catch (error) {
+
+            console.warn("Lightweight torso estimation failed.", error);
+
+        }
+
+    }));
+
+}
+
+/** Creates one predictable lacquered display material for every scan format. */
+function createImportedModelMaterial() {
+
+    return new THREE.MeshPhysicalMaterial({
+        color: IMPORTED_MODEL_COLOR,
+        emissive: IMPORTED_MODEL_EMISSIVE,
+        emissiveIntensity: 0.08,
+        opacity: IMPORTED_MODEL_OPACITY,
+        transparent: false,
+        depthWrite: true,
+        side: THREE.DoubleSide,
+        roughness: IMPORTED_MODEL_ROUGHNESS,
+        metalness: IMPORTED_MODEL_METALNESS,
+        ior: 1.5,
+        specularIntensity: 0.82,
+        specularColor: 0xb8a9c2,
+        clearcoat: 0.38,
+        clearcoatRoughness: 0.24,
+        sheen: 0.08,
+        sheenColor: 0x55405e,
+        envMapIntensity: 0.72
+    });
+
+}
+
+function disposeReplacedMaterials(materials) {
+
+    const disposedTextures = new Set();
+
+    materials.forEach((material) => {
+
+        Object.values(material).forEach((value) => {
+
+            if (value?.isTexture && !disposedTextures.has(value)) {
+
+                value.dispose();
+                disposedTextures.add(value);
+
+            }
+
+        });
+
+        material.dispose();
+
+    });
+
+}
