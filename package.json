@@ -4,7 +4,7 @@
   "description": "Interactive Three.js body-scan visualization and torso analysis.",
   "scripts": {
     "dev": "parcel src/index.html",
-    "build": "node scripts/clean-build.mjs && parcel build src/index.html --dist-dir dist/client --public-url / --no-source-maps && node scripts/create-worker.mjs"
+    "build": "node scripts/clean-build.mjs && parcel build src/index.html --dist-dir dist --public-url ./ --no-source-maps"
   },
   "keywords": [],
   "author": "",
