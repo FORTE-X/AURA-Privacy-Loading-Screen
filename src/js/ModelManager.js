@@ -18,13 +18,14 @@ export class ModelManager {
 
     }
 
-    addModel({ model, file, cameraView }) {
+    addModel({ model, file, cameraView, portraitPortal = null }) {
 
         this.removeActiveModel();
         const modelContainer = new THREE.Group();
 
         modelContainer.name = "Imported Model Container";
         modelContainer.add(model);
+        if (portraitPortal) modelContainer.add(portraitPortal.object3D);
         model.visible = true;
 
         const entry = {
@@ -35,6 +36,7 @@ export class ModelManager {
             fileName: file.name,
             fileType: file.name.split(".").pop().toUpperCase(),
             torsoMarker: null,
+            portraitPortal,
             cameraView: {
 
                 position: cameraView.position.clone(),
@@ -84,6 +86,7 @@ export class ModelManager {
         if (!entry) return false;
 
         this.cleanupHandlers.forEach((handler) => handler(entry));
+        entry.portraitPortal?.dispose();
         entry.torsoMarker?.dispose();
         this.scene.remove(entry.modelContainer);
         this.disposeModel(entry.model);

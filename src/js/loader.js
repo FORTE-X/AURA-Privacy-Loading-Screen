@@ -17,6 +17,7 @@ import {
 import {
     TorsoMarker
 } from "./LightweightTorsoEstimator/TorsoMarker.js";
+import { PortraitPortal } from "./PortraitPortal/PortraitPortal.js";
 
 const gltfLoader = new GLTFLoader();
 const objLoader = new OBJLoader();
@@ -143,8 +144,8 @@ export function loadModel(file, status) {
                 radius /
                 Math.sin(fov / 2);
 
-            // Bring camera slightly closer
-            distance *= 0.94;
+            // Leave enough portrait margin for the animated portal ripples.
+            distance *= 1.02;
 
             camera.position.set(
 
@@ -200,12 +201,14 @@ export function loadModel(file, status) {
                 target: controls.target.clone()
 
             };
+            const portraitPortal = new PortraitPortal(box, cutoffY);
 
             const modelEntry = modelManager.addModel({
 
                 model: importedModel,
                 file,
-                cameraView
+                cameraView,
+                portraitPortal
 
             });
 
