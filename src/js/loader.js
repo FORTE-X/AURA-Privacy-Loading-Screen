@@ -20,7 +20,6 @@ import {
 import {
     InvertedHullOutline
 } from "./GlowingOutline/InvertedHullOutline.js";
-import { PortraitPortal } from "./PortraitPortal/PortraitPortal.js";
 
 const gltfLoader = new GLTFLoader();
 const objLoader = new OBJLoader();
@@ -204,22 +203,7 @@ export function loadModel(file, status) {
                 target: controls.target.clone()
 
             };
-            let portraitPortal = null;
             let glowingOutline = null;
-
-            try {
-
-                portraitPortal = new PortraitPortal(
-                    importedModel,
-                    box,
-                    cutoffY
-                );
-
-            } catch (error) {
-
-                console.warn("Portrait portal creation failed.", error);
-
-            }
 
             try {
 
@@ -240,7 +224,6 @@ export function loadModel(file, status) {
                 model: importedModel,
                 file,
                 cameraView,
-                portraitPortal,
                 glowingOutline
 
             });

@@ -22,7 +22,6 @@ export class ModelManager {
         model,
         file,
         cameraView,
-        portraitPortal = null,
         glowingOutline = null
     }) {
 
@@ -31,7 +30,6 @@ export class ModelManager {
 
         modelContainer.name = "Imported Model Container";
         modelContainer.add(model);
-        if (portraitPortal) modelContainer.add(portraitPortal.object3D);
         if (glowingOutline) modelContainer.add(glowingOutline.object3D);
         model.visible = true;
 
@@ -43,7 +41,6 @@ export class ModelManager {
             fileName: file.name,
             fileType: file.name.split(".").pop().toUpperCase(),
             torsoMarker: null,
-            portraitPortal,
             glowingOutline,
             cameraView: {
 
@@ -94,7 +91,6 @@ export class ModelManager {
         if (!entry) return false;
 
         this.cleanupHandlers.forEach((handler) => handler(entry));
-        entry.portraitPortal?.dispose();
         entry.glowingOutline?.dispose();
         entry.torsoMarker?.dispose();
         this.scene.remove(entry.modelContainer);
