@@ -17,7 +17,6 @@ import {
 import {
     TorsoMarker
 } from "./LightweightTorsoEstimator/TorsoMarker.js";
-import { PortraitPortal } from "./PortraitPortal/PortraitPortal.js";
 import {
     InvertedHullOutline
 } from "./GlowingOutline/InvertedHullOutline.js";
@@ -147,7 +146,7 @@ export function loadModel(file, status) {
                 radius /
                 Math.sin(fov / 2);
 
-            // Leave enough portrait margin for the animated portal ripples.
+            // Leave a small portrait margin for the glowing outline bloom.
             distance *= 1.02;
 
             camera.position.set(
@@ -204,7 +203,6 @@ export function loadModel(file, status) {
                 target: controls.target.clone()
 
             };
-            const portraitPortal = new PortraitPortal(box, cutoffY);
             let glowingOutline = null;
 
             try {
@@ -226,7 +224,6 @@ export function loadModel(file, status) {
                 model: importedModel,
                 file,
                 cameraView,
-                portraitPortal,
                 glowingOutline
 
             });
