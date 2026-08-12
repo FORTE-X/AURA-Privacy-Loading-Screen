@@ -15,6 +15,8 @@ Changes:
 - Matched the portrait clipping plane and imported-model lifecycle.
 - Added configurable thickness, opacity, color, and glow strength.
 - Verified consistent outline thickness on two differently proportioned scans.
+- Darkened the source material further and increased outward outline bloom so
+  the body reads as a light-absorbing void surrounded by violet energy.
 
 ## Candidate: Phone-only bottom controls
 

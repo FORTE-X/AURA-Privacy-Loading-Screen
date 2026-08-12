@@ -2,8 +2,11 @@ import * as THREE from "three";
 
 export const OUTLINE_COLOR = 0xf08cff;
 export const OUTLINE_THICKNESS_RATIO = 0.0015;
-export const OUTLINE_OPACITY = 0.52;
-export const OUTLINE_GLOW_STRENGTH = 1.55;
+export const OUTLINE_OPACITY = 0.66;
+export const OUTLINE_GLOW_STRENGTH = 2.15;
+export const OUTLINE_HALO_THICKNESS_RATIO = 0.0048;
+export const OUTLINE_HALO_OPACITY = 0.14;
+export const OUTLINE_HALO_STRENGTH = 1.35;
 
 const minimumScale = 1e-6;
 const temporaryPosition = new THREE.Vector3();
@@ -29,6 +32,7 @@ export class InvertedHullOutline {
         this.group = new THREE.Group();
         this.group.name = "Imported Model Glowing Outline";
         this.geometries = [];
+        this.materials = [];
         this.disposed = false;
 
         const modelHeight = bounds.getSize(new THREE.Vector3()).y;
@@ -36,8 +40,22 @@ export class InvertedHullOutline {
             modelHeight * OUTLINE_THICKNESS_RATIO,
             Number.EPSILON
         );
+        const haloWorldThickness = Math.max(
+            modelHeight * OUTLINE_HALO_THICKNESS_RATIO,
+            worldThickness
+        );
 
-        this.material = createOutlineMaterial(cutoffY);
+        this.material = createOutlineMaterial(
+            cutoffY,
+            OUTLINE_OPACITY,
+            OUTLINE_GLOW_STRENGTH
+        );
+        this.haloMaterial = createOutlineMaterial(
+            cutoffY,
+            OUTLINE_HALO_OPACITY,
+            OUTLINE_HALO_STRENGTH
+        );
+        this.materials.push(this.material, this.haloMaterial);
         sourceModel.updateWorldMatrix(true, true);
 
         sourceModel.traverse((sourceMesh) => {
@@ -47,12 +65,20 @@ export class InvertedHullOutline {
             }
 
             let geometry;
+            let haloGeometry;
 
             try {
 
                 geometry = createExpandedGeometry(sourceMesh, worldThickness);
+                haloGeometry = createExpandedGeometry(
+                    sourceMesh,
+                    haloWorldThickness
+                );
 
             } catch (error) {
+
+                geometry?.dispose();
+                haloGeometry?.dispose();
 
                 console.warn(
                     `Skipping outline for ${sourceMesh.name || "unnamed mesh"}.`,
@@ -63,22 +89,21 @@ export class InvertedHullOutline {
             }
 
             const outlineMesh = new THREE.Mesh(geometry, this.material);
+            const haloMesh = new THREE.Mesh(haloGeometry, this.haloMaterial);
 
             outlineMesh.name = `${sourceMesh.name || "Imported Mesh"} Outline`;
-            outlineMesh.matrixAutoUpdate = false;
-            outlineMesh.matrix.copy(sourceMesh.matrixWorld);
-            outlineMesh.frustumCulled = sourceMesh.frustumCulled;
-            outlineMesh.renderOrder = 6;
-            outlineMesh.castShadow = false;
-            outlineMesh.receiveShadow = false;
+            haloMesh.name = `${sourceMesh.name || "Imported Mesh"} Glow Halo`;
+            configureOutlineMesh(outlineMesh, sourceMesh, 6);
+            configureOutlineMesh(haloMesh, sourceMesh, 5);
 
+            this.group.add(haloMesh);
             this.group.add(outlineMesh);
-            this.geometries.push(geometry);
+            this.geometries.push(geometry, haloGeometry);
 
         });
 
         if (this.geometries.length === 0) {
-            this.material.dispose();
+            this.materials.forEach((material) => material.dispose());
             throw new Error("The imported model contains no outlineable meshes.");
         }
 
@@ -109,11 +134,23 @@ export class InvertedHullOutline {
         this.disposed = true;
         this.group.removeFromParent();
         this.geometries.forEach((geometry) => geometry.dispose());
-        this.material.dispose();
+        this.materials.forEach((material) => material.dispose());
         this.geometries.length = 0;
+        this.materials.length = 0;
         this.group.clear();
 
     }
+
+}
+
+function configureOutlineMesh(mesh, sourceMesh, renderOrder) {
+
+    mesh.matrixAutoUpdate = false;
+    mesh.matrix.copy(sourceMesh.matrixWorld);
+    mesh.frustumCulled = sourceMesh.frustumCulled;
+    mesh.renderOrder = renderOrder;
+    mesh.castShadow = false;
+    mesh.receiveShadow = false;
 
 }
 
@@ -185,17 +222,17 @@ function createExpandedGeometry(sourceMesh, worldThickness) {
 
 }
 
-function createOutlineMaterial(cutoffY) {
+function createOutlineMaterial(cutoffY, opacity, glowStrength) {
 
     const color = new THREE.Color(OUTLINE_COLOR);
 
-    color.multiplyScalar(OUTLINE_GLOW_STRENGTH);
+    color.multiplyScalar(glowStrength);
 
     return new THREE.MeshBasicMaterial({
         color,
         side: THREE.BackSide,
         transparent: true,
-        opacity: OUTLINE_OPACITY,
+        opacity,
         depthTest: true,
         depthWrite: false,
         blending: THREE.AdditiveBlending,

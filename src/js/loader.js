@@ -25,10 +25,10 @@ import {
 const gltfLoader = new GLTFLoader();
 const objLoader = new OBJLoader();
 const fbxLoader = new FBXLoader();
-export const IMPORTED_MODEL_COLOR = 0x020104;
-export const IMPORTED_MODEL_EMISSIVE = 0x010002;
+export const IMPORTED_MODEL_COLOR = 0x010102;
+export const IMPORTED_MODEL_EMISSIVE = 0x000000;
 export const IMPORTED_MODEL_OPACITY = 1;
-export const IMPORTED_MODEL_ROUGHNESS = 0.58;
+export const IMPORTED_MODEL_ROUGHNESS = 0.72;
 export const IMPORTED_MODEL_METALNESS = 0;
 // Hide the lowest 32% of the scan for the fixed upper-body portrait.
 export const PORTRAIT_LOWER_BODY_CUTOFF_RATIO = 0.32;
@@ -323,7 +323,7 @@ function createImportedModelMaterial(cutoffY) {
     return new THREE.MeshPhysicalMaterial({
         color: IMPORTED_MODEL_COLOR,
         emissive: IMPORTED_MODEL_EMISSIVE,
-        emissiveIntensity: 0.015,
+        emissiveIntensity: 0,
         opacity: IMPORTED_MODEL_OPACITY,
         transparent: false,
         depthWrite: true,
@@ -331,14 +331,14 @@ function createImportedModelMaterial(cutoffY) {
         roughness: IMPORTED_MODEL_ROUGHNESS,
         metalness: IMPORTED_MODEL_METALNESS,
         ior: 1.5,
-        specularIntensity: 0.2,
-        specularColor: 0x4e2b5b,
-        clearcoat: 0.08,
-        clearcoatRoughness: 0.62,
-        sheen: 0.14,
-        sheenRoughness: 0.52,
-        sheenColor: 0x4f1d60,
-        envMapIntensity: 0.16,
+        specularIntensity: 0.08,
+        specularColor: 0x32183b,
+        clearcoat: 0.02,
+        clearcoatRoughness: 0.78,
+        sheen: 0.04,
+        sheenRoughness: 0.72,
+        sheenColor: 0x381344,
+        envMapIntensity: 0.05,
         clippingPlanes: [new THREE.Plane(new THREE.Vector3(0, 1, 0), -cutoffY)],
         clipShadows: true
     });
