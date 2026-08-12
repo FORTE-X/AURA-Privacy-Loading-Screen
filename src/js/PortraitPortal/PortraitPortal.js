@@ -7,6 +7,7 @@ export const PORTAL_RADIUS_WIDTH_RATIO = 0.62;
 export const PORTAL_GLOW_HEIGHT_RATIO = 0.38;
 export const PORTAL_RIPPLE_OPACITY = 0.1;
 export const PORTAL_UPWARD_GLOW_OPACITY = 0.34;
+export const PORTAL_FRONT_WASH_OPACITY = 0.22;
 
 export class PortraitPortal {
 
@@ -162,6 +163,26 @@ export class PortraitPortal {
         this.upwardBeam = beam;
         this.materials.push(beamMaterial);
 
+        // The source model intentionally absorbs scene lighting. This soft
+        // foreground layer lets only the portal's lower light rise across the
+        // front of the silhouette without making the whole material reflective.
+        const frontWashTexture = createFrontWashTexture();
+        const frontWashMaterial = material.clone();
+        const frontWash = new THREE.Sprite(frontWashMaterial);
+
+        frontWashMaterial.map = frontWashTexture;
+        frontWashMaterial.needsUpdate = true;
+        frontWash.name = "Portal Lower Front Wash";
+        frontWash.position.set(0, height * 0.3, modelDepth * 0.68);
+        frontWash.scale.set(radius * 1.9, height * 0.72, 1);
+        frontWash.material.opacity = PORTAL_FRONT_WASH_OPACITY;
+        frontWash.material.depthTest = false;
+        frontWash.renderOrder = 8;
+        this.group.add(frontWash);
+        this.frontWash = frontWash;
+        this.materials.push(frontWashMaterial);
+        this.textures.push(frontWashTexture);
+
     }
 
     update(_deltaTime, elapsedTime) {
@@ -192,6 +213,8 @@ export class PortraitPortal {
             PORTAL_UPWARD_GLOW_OPACITY * (0.84 + pulse * 0.16);
         this.upwardBeam.material.opacity =
             PORTAL_UPWARD_GLOW_OPACITY * (0.24 + pulse * 0.12);
+        this.frontWash.material.opacity =
+            PORTAL_FRONT_WASH_OPACITY * (0.82 + pulse * 0.18);
 
     }
 
@@ -333,6 +356,48 @@ function createVerticalGlowTexture() {
                 ? Math.pow(1 - baseDistance, 2.2)
                 : 0;
             const alpha = Math.min(1, beam * 0.78 + base * 0.62);
+            const offset = (y * canvas.width + x) * 4;
+
+            image.data[offset] = 255;
+            image.data[offset + 1] = 255;
+            image.data[offset + 2] = 255;
+            image.data[offset + 3] = Math.round(alpha * 255);
+
+        }
+
+    }
+
+    context.putImageData(image, 0, 0);
+
+    return createCanvasTexture(canvas);
+
+}
+
+function createFrontWashTexture() {
+
+    const canvas = createTextureCanvas(256);
+    const context = canvas.getContext("2d");
+    const image = context.createImageData(canvas.width, canvas.height);
+
+    for (let y = 0; y < canvas.height; y++) {
+
+        const vertical = y / (canvas.height - 1);
+        const verticalFade = Math.pow(vertical, 1.55);
+
+        for (let x = 0; x < canvas.width; x++) {
+
+            const horizontal = Math.abs(
+                (x / (canvas.width - 1) - 0.5) * 2
+            );
+            const horizontalFade = horizontal < 1
+                ? Math.pow(1 - horizontal * horizontal, 2.15)
+                : 0;
+            const edgeFade = Math.min(
+                1,
+                x / 12,
+                (canvas.width - 1 - x) / 12
+            );
+            const alpha = horizontalFade * verticalFade * edgeFade;
             const offset = (y * canvas.width + x) * 4;
 
             image.data[offset] = 255;

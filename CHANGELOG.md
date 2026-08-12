@@ -17,6 +17,8 @@ Changes:
 - Verified consistent outline thickness on two differently proportioned scans.
 - Darkened the source material further and increased outward outline bloom so
   the body reads as a light-absorbing void surrounded by violet energy.
+- Added a localized portal wash over the lower front of the silhouette while
+  preserving the black, light-absorbing material everywhere else.
 
 ## Candidate: Phone-only bottom controls
 
