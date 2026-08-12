@@ -19,11 +19,6 @@ Changes:
   the body reads as a light-absorbing void surrounded by violet energy.
 - Added a localized portal wash over the lower front of the silhouette while
   preserving the black, light-absorbing material everywhere else.
-- Removed the rear upward aura, rising beam, and lower-front wash after their
-  sprite boundaries produced a visible line; the portal now retains only its
-  soft disk and feathered ripple rings.
-- Removed the remaining portal disk and ripple rings as well, leaving no lower
-  glow or horizontal portal lines in the portrait scene.
 
 ## Candidate: Phone-only bottom controls
 
