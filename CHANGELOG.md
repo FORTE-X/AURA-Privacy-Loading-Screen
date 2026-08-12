@@ -24,6 +24,9 @@ Changes:
   soft disk and feathered ripple rings.
 - Removed the remaining portal disk and ripple rings as well, leaving no lower
   glow or horizontal portal lines in the portrait scene.
+- Restored the portal disk and ripples, then replaced the old front/back glow
+  sprites with a vertex-colored surface layer that rises smoothly over the
+  model's lower body without a rectangular boundary.
 
 ## Candidate: Phone-only bottom controls
 
