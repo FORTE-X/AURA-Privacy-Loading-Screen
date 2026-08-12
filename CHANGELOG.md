@@ -27,6 +27,8 @@ Changes:
 - Restored the portal disk and ripples, then replaced the old front/back glow
   sprites with a vertex-colored surface layer that rises smoothly over the
   model's lower body without a rectangular boundary.
+- Brightened the portal's inner pool, added a soft full-area finishing aura,
+  and replaced uniform ripple bands with thinner noise-varied glow lines.
 
 ## Candidate: Phone-only bottom controls
 
