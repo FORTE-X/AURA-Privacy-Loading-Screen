@@ -18,6 +18,9 @@ import {
     TorsoMarker
 } from "./LightweightTorsoEstimator/TorsoMarker.js";
 import { PortraitPortal } from "./PortraitPortal/PortraitPortal.js";
+import {
+    InvertedHullOutline
+} from "./GlowingOutline/InvertedHullOutline.js";
 
 const gltfLoader = new GLTFLoader();
 const objLoader = new OBJLoader();
@@ -202,13 +205,29 @@ export function loadModel(file, status) {
 
             };
             const portraitPortal = new PortraitPortal(box, cutoffY);
+            let glowingOutline = null;
+
+            try {
+
+                glowingOutline = new InvertedHullOutline(
+                    importedModel,
+                    box,
+                    cutoffY
+                );
+
+            } catch (error) {
+
+                console.warn("Glowing outline creation failed.", error);
+
+            }
 
             const modelEntry = modelManager.addModel({
 
                 model: importedModel,
                 file,
                 cameraView,
-                portraitPortal
+                portraitPortal,
+                glowingOutline
 
             });
 

@@ -2,6 +2,20 @@
 
 This file records isolated feature work so changes can be reviewed before they are merged into `main` and published.
 
+## Offline iteration: Inverted-hull silhouette outline
+
+Status: **Saved locally; not published.**
+
+Changes:
+
+- Duplicated each imported mesh into an independently owned outline shell.
+- Expanded outline vertices along their actual vertex normals.
+- Rendered only the shell's back faces for an anime-style violet contour.
+- Kept the outline outside the analyzed model so torso estimation is unchanged.
+- Matched the portrait clipping plane and imported-model lifecycle.
+- Added configurable thickness, opacity, color, and glow strength.
+- Verified consistent outline thickness on two differently proportioned scans.
+
 ## Candidate: Phone-only bottom controls
 
 Branch: `fix/mobile-only-bottom-controls`
