@@ -218,7 +218,6 @@ button:disabled { cursor: not-allowed; opacity: .45; transform: none; filter: no
     }
 
     #uploadBtn::before { content: "+"; }
-    #pauseRotationBtn::before { content: "Ⅱ"; }
     #resetViewBtn::before { content: "↺"; }
 
     button:hover {

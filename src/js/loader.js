@@ -27,6 +27,8 @@ export const IMPORTED_MODEL_EMISSIVE = 0x010102;
 export const IMPORTED_MODEL_OPACITY = 1;
 export const IMPORTED_MODEL_ROUGHNESS = 0.22;
 export const IMPORTED_MODEL_METALNESS = 0.02;
+// Hide the lowest 32% of the scan for the fixed upper-body portrait.
+export const PORTRAIT_LOWER_BODY_CUTOFF_RATIO = 0.32;
 
 // Retained imported-model reference for existing consumers.
 export let currentModel = null;
@@ -125,7 +127,16 @@ export function loadModel(file, status) {
 
             box.setFromObject(importedModel);
 
-            const sphere = box.getBoundingSphere(
+            const cutoffY = THREE.MathUtils.lerp(
+                box.min.y,
+                box.max.y,
+                PORTRAIT_LOWER_BODY_CUTOFF_RATIO
+            );
+            const portraitBox = box.clone();
+
+            portraitBox.min.y = cutoffY;
+
+            const sphere = portraitBox.getBoundingSphere(
                 new THREE.Sphere()
             );
 
@@ -160,7 +171,7 @@ export function loadModel(file, status) {
             // Enable Shadows
             //--------------------------------------------------
 
-            const importedMaterial = createImportedModelMaterial();
+            const importedMaterial = createImportedModelMaterial(cutoffY);
             const replacedMaterials = new Set();
 
             importedModel.traverse((child) => {
@@ -300,7 +311,7 @@ function scheduleTorsoMarker(modelEntry) {
 }
 
 /** Creates one predictable lacquered display material for every scan format. */
-function createImportedModelMaterial() {
+function createImportedModelMaterial(cutoffY) {
 
     return new THREE.MeshPhysicalMaterial({
         color: IMPORTED_MODEL_COLOR,
@@ -319,7 +330,9 @@ function createImportedModelMaterial() {
         clearcoatRoughness: 0.24,
         sheen: 0.08,
         sheenColor: 0x55405e,
-        envMapIntensity: 0.72
+        envMapIntensity: 0.72,
+        clippingPlanes: [new THREE.Plane(new THREE.Vector3(0, 1, 0), -cutoffY)],
+        clipShadows: true
     });
 
 }

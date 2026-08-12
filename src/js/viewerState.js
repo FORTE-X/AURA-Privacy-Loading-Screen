@@ -4,7 +4,6 @@
  */
 export const viewerState = {
 
-    autoRotateEnabled: true,
     defaultView: null,
     savedView: null
 

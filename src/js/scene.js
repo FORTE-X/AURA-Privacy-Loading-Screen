@@ -33,6 +33,7 @@ export const renderer = new THREE.WebGLRenderer({
 });
 
 renderer.setClearColor(0x000000, 0);
+renderer.localClippingEnabled = true;
 renderer.setPixelRatio(renderPixelRatio);
 renderer.setSize(viewport.clientWidth, viewport.clientHeight);
 renderer.shadowMap.enabled = !isMobileViewport;
@@ -93,6 +94,9 @@ export const controls = new OrbitControls(
 
 controls.enableDamping = true;
 controls.enablePan = false;
+controls.enableRotate = false;
+controls.enableZoom = false;
+controls.enabled = false;
 controls.target.set(0, 1, 0);
 
 viewerState.defaultView = {

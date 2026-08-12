@@ -16,22 +16,9 @@ const status = document.getElementById("status");
 
 const modelList = document.getElementById("modelList");
 
-const pauseRotationBtn = document.getElementById("pauseRotationBtn");
-
 const resetViewBtn = document.getElementById("resetViewBtn");
 
 const toggleTorsoMarkerBtn = document.getElementById("toggleTorsoMarkerBtn");
-
-function updateRotationButton() {
-
-    pauseRotationBtn.textContent = viewerState.autoRotateEnabled
-        ? "Pause Rotation"
-        : "Resume Rotation";
-    pauseRotationBtn.dataset.mobileLabel = viewerState.autoRotateEnabled
-        ? "Pause"
-        : "Resume";
-
-}
 
 function restoreView(view) {
 
@@ -45,21 +32,12 @@ function restoreView(view) {
 
 }
 
-pauseRotationBtn.addEventListener("click", () => {
-
-    viewerState.autoRotateEnabled = !viewerState.autoRotateEnabled;
-    updateRotationButton();
-
-});
-
 resetViewBtn.addEventListener("click", () => {
 
     restoreView(viewerState.savedView ?? viewerState.defaultView);
     modelManager.resetActiveModelRotation();
 
 });
-
-updateRotationButton();
 
 function renderModelList(models, activeModel) {
 
