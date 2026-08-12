@@ -1,13 +1,12 @@
 # Portrait Portal
 
-Creates the animated portal at the lower-body portrait cutoff. The feature is
-parented to the imported model container, follows its lifecycle, and provides:
+Creates a reference-proportioned portal beneath each imported portrait:
 
-- faint feathered ripple rings;
-- a soft, edgeless portal disk;
-- a broad upward aura and a narrower rising light beam behind the body;
-- a localized foreground wash that carries portal light across the lower front
-  of the otherwise light-absorbing silhouette.
+- a compact bright inner pool;
+- a faint finishing aura across the complete portal footprint;
+- six thin, subtly noise-varied animated ripple lines;
+- a short surface-conforming reflection over the lowest part of the model.
 
-Tune the exported constants in `PortraitPortal.js` to adjust color, size,
-ripple speed, ripple opacity, upward-glow height, and front-wash opacity.
+The lower reflection is vertex-colored duplicate surface geometry, not a
+rectangular sprite, so it cannot expose a straight texture boundary. Tune the
+exported `PORTAL_*` constants in `PortraitPortal.js`.

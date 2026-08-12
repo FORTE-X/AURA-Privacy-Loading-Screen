@@ -2,6 +2,19 @@
 
 This file records isolated feature work so changes can be reviewed before they are merged into `main` and published.
 
+## Offline iteration: Reference-matched portrait lighting
+
+Status: **Saved locally; not published.**
+
+Changes:
+
+- Rebalanced the portal using the supplied silhouette artwork as a proportional
+  reference rather than maximizing glow intensity.
+- Enlarged the portal footprint, added a compact bright inner pool, and used
+  six thin noise-varied ripples over a faint full-area aura.
+- Replaced rectangular lower-glow sprites with a short surface-conforming fade.
+- Reduced model reflections and tightened the violet outline and halo.
+
 ## Offline iteration: Inverted-hull silhouette outline
 
 Status: **Saved locally; not published.**

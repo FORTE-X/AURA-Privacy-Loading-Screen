@@ -1,12 +1,12 @@
 import * as THREE from "three";
 
 export const OUTLINE_COLOR = 0xf08cff;
-export const OUTLINE_THICKNESS_RATIO = 0.0015;
-export const OUTLINE_OPACITY = 0.66;
-export const OUTLINE_GLOW_STRENGTH = 2.15;
-export const OUTLINE_HALO_THICKNESS_RATIO = 0.0048;
-export const OUTLINE_HALO_OPACITY = 0.14;
-export const OUTLINE_HALO_STRENGTH = 1.35;
+export const OUTLINE_THICKNESS_RATIO = 0.00115;
+export const OUTLINE_OPACITY = 0.58;
+export const OUTLINE_GLOW_STRENGTH = 1.9;
+export const OUTLINE_HALO_THICKNESS_RATIO = 0.0032;
+export const OUTLINE_HALO_OPACITY = 0.1;
+export const OUTLINE_HALO_STRENGTH = 1.15;
 
 const minimumScale = 1e-6;
 const temporaryPosition = new THREE.Vector3();

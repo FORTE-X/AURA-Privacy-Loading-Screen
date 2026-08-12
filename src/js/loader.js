@@ -28,7 +28,7 @@ const fbxLoader = new FBXLoader();
 export const IMPORTED_MODEL_COLOR = 0x010102;
 export const IMPORTED_MODEL_EMISSIVE = 0x000000;
 export const IMPORTED_MODEL_OPACITY = 1;
-export const IMPORTED_MODEL_ROUGHNESS = 0.72;
+export const IMPORTED_MODEL_ROUGHNESS = 0.82;
 export const IMPORTED_MODEL_METALNESS = 0;
 // Hide the lowest 32% of the scan for the fixed upper-body portrait.
 export const PORTRAIT_LOWER_BODY_CUTOFF_RATIO = 0.32;
@@ -204,7 +204,11 @@ export function loadModel(file, status) {
                 target: controls.target.clone()
 
             };
-            const portraitPortal = new PortraitPortal(box, cutoffY);
+            const portraitPortal = new PortraitPortal(
+                importedModel,
+                box,
+                cutoffY
+            );
             let glowingOutline = null;
 
             try {
@@ -331,14 +335,14 @@ function createImportedModelMaterial(cutoffY) {
         roughness: IMPORTED_MODEL_ROUGHNESS,
         metalness: IMPORTED_MODEL_METALNESS,
         ior: 1.5,
-        specularIntensity: 0.08,
+        specularIntensity: 0.045,
         specularColor: 0x32183b,
-        clearcoat: 0.02,
-        clearcoatRoughness: 0.78,
-        sheen: 0.04,
-        sheenRoughness: 0.72,
+        clearcoat: 0.01,
+        clearcoatRoughness: 0.86,
+        sheen: 0.025,
+        sheenRoughness: 0.82,
         sheenColor: 0x381344,
-        envMapIntensity: 0.05,
+        envMapIntensity: 0.025,
         clippingPlanes: [new THREE.Plane(new THREE.Vector3(0, 1, 0), -cutoffY)],
         clipShadows: true
     });
