@@ -22,11 +22,11 @@ import { PortraitPortal } from "./PortraitPortal/PortraitPortal.js";
 const gltfLoader = new GLTFLoader();
 const objLoader = new OBJLoader();
 const fbxLoader = new FBXLoader();
-export const IMPORTED_MODEL_COLOR = 0x09070c;
-export const IMPORTED_MODEL_EMISSIVE = 0x010102;
+export const IMPORTED_MODEL_COLOR = 0x020104;
+export const IMPORTED_MODEL_EMISSIVE = 0x010002;
 export const IMPORTED_MODEL_OPACITY = 1;
-export const IMPORTED_MODEL_ROUGHNESS = 0.22;
-export const IMPORTED_MODEL_METALNESS = 0.02;
+export const IMPORTED_MODEL_ROUGHNESS = 0.58;
+export const IMPORTED_MODEL_METALNESS = 0;
 // Hide the lowest 32% of the scan for the fixed upper-body portrait.
 export const PORTRAIT_LOWER_BODY_CUTOFF_RATIO = 0.32;
 
@@ -298,13 +298,13 @@ function scheduleTorsoMarker(modelEntry) {
 
 }
 
-/** Creates one predictable lacquered display material for every scan format. */
+/** Creates a light-absorbing silhouette material with restrained violet edges. */
 function createImportedModelMaterial(cutoffY) {
 
     return new THREE.MeshPhysicalMaterial({
         color: IMPORTED_MODEL_COLOR,
         emissive: IMPORTED_MODEL_EMISSIVE,
-        emissiveIntensity: 0.08,
+        emissiveIntensity: 0.015,
         opacity: IMPORTED_MODEL_OPACITY,
         transparent: false,
         depthWrite: true,
@@ -312,13 +312,14 @@ function createImportedModelMaterial(cutoffY) {
         roughness: IMPORTED_MODEL_ROUGHNESS,
         metalness: IMPORTED_MODEL_METALNESS,
         ior: 1.5,
-        specularIntensity: 0.82,
-        specularColor: 0xb8a9c2,
-        clearcoat: 0.38,
-        clearcoatRoughness: 0.24,
-        sheen: 0.08,
-        sheenColor: 0x55405e,
-        envMapIntensity: 0.72,
+        specularIntensity: 0.2,
+        specularColor: 0x4e2b5b,
+        clearcoat: 0.08,
+        clearcoatRoughness: 0.62,
+        sheen: 0.14,
+        sheenRoughness: 0.52,
+        sheenColor: 0x4f1d60,
+        envMapIntensity: 0.16,
         clippingPlanes: [new THREE.Plane(new THREE.Vector3(0, 1, 0), -cutoffY)],
         clipShadows: true
     });

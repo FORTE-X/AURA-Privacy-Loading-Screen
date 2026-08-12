@@ -3,9 +3,9 @@
 Creates the animated portal at the lower-body portrait cutoff. The feature is
 parented to the imported model container, follows its lifecycle, and provides:
 
-- animated concentric ripple rings;
-- a soft portal disk;
-- a fading vertical glow aura behind the visible body.
+- faint feathered ripple rings;
+- a soft, edgeless portal disk;
+- a broad upward aura and a narrower rising light beam behind the body.
 
 Tune the exported constants in `PortraitPortal.js` to adjust color, size,
-ripple speed, and glow height.
+ripple speed, ripple opacity, and upward-glow height or opacity.

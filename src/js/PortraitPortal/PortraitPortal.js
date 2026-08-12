@@ -4,7 +4,9 @@ export const PORTAL_COLOR = 0xe36cff;
 export const PORTAL_RIPPLE_COUNT = 4;
 export const PORTAL_RIPPLE_SPEED = 0.32;
 export const PORTAL_RADIUS_WIDTH_RATIO = 0.62;
-export const PORTAL_GLOW_HEIGHT_RATIO = 0.28;
+export const PORTAL_GLOW_HEIGHT_RATIO = 0.38;
+export const PORTAL_RIPPLE_OPACITY = 0.1;
+export const PORTAL_UPWARD_GLOW_OPACITY = 0.34;
 
 export class PortraitPortal {
 
@@ -61,34 +63,34 @@ export class PortraitPortal {
 
     addCoreGlow(radius) {
 
-        const diskGeometry = new THREE.CircleGeometry(radius * 0.94, 128);
-        const diskMaterial = createGlowMaterial(0.035);
+        const diskTexture = createSoftDiskTexture();
+        const diskGeometry = new THREE.PlaneGeometry(radius * 2.15, radius * 2.15);
+        const diskMaterial = createGlowMaterial(0.065, 1.1, diskTexture);
         const disk = new THREE.Mesh(diskGeometry, diskMaterial);
 
         disk.name = "Portal Soft Disk";
         disk.rotation.x = -Math.PI / 2;
-        disk.scale.z = 0.7;
+        disk.scale.y = 0.68;
         disk.renderOrder = 2;
         this.group.add(disk);
         this.geometries.push(diskGeometry);
         this.materials.push(diskMaterial);
+        this.textures.push(diskTexture);
 
-        const coreGeometry = new THREE.RingGeometry(
-            radius * 0.76,
-            radius * 0.79,
-            160
-        );
-        const coreMaterial = createGlowMaterial(0.72, 3.2);
+        const ringTexture = createSoftRingTexture();
+        const coreGeometry = new THREE.PlaneGeometry(radius * 2, radius * 2);
+        const coreMaterial = createGlowMaterial(0.2, 1.75, ringTexture);
         const coreRing = new THREE.Mesh(coreGeometry, coreMaterial);
 
         coreRing.name = "Portal Core Ring";
         coreRing.rotation.x = -Math.PI / 2;
-        coreRing.scale.z = 0.7;
+        coreRing.scale.y = 0.68;
         coreRing.renderOrder = 4;
         this.group.add(coreRing);
         this.coreRing = coreRing;
         this.geometries.push(coreGeometry);
         this.materials.push(coreMaterial);
+        this.textures.push(ringTexture);
 
     }
 
@@ -96,12 +98,12 @@ export class PortraitPortal {
 
         for (let index = 0; index < PORTAL_RIPPLE_COUNT; index++) {
 
-            const geometry = new THREE.RingGeometry(
-                radius * 0.78,
-                radius * 0.795,
-                160
+            const geometry = new THREE.PlaneGeometry(radius * 2, radius * 2);
+            const material = createGlowMaterial(
+                PORTAL_RIPPLE_OPACITY,
+                1.75,
+                this.coreRing.material.map
             );
-            const material = createGlowMaterial(0.42, 2.1);
             const mesh = new THREE.Mesh(geometry, material);
 
             mesh.name = `Portal Ripple ${index + 1}`;
@@ -123,32 +125,42 @@ export class PortraitPortal {
     addUpwardGlow(radius, height, modelDepth) {
 
         const texture = createVerticalGlowTexture();
-        const geometry = new THREE.PlaneGeometry(radius * 2.25, height, 1, 1);
         const auraColor = new THREE.Color();
 
-        auraColor.setRGB(1.8, 0.55, 2.2);
+        auraColor.setRGB(1.65, 0.42, 2.0);
 
-        const material = new THREE.MeshBasicMaterial({
+        const material = new THREE.SpriteMaterial({
             color: auraColor,
             map: texture,
             transparent: true,
-            opacity: 0.46,
-            side: THREE.DoubleSide,
+            opacity: PORTAL_UPWARD_GLOW_OPACITY,
             blending: THREE.AdditiveBlending,
             depthWrite: false,
             toneMapped: false
         });
-        const glow = new THREE.Mesh(geometry, material);
+        const glow = new THREE.Sprite(material);
 
         glow.name = "Portal Upward Glow";
-        glow.position.y = height * 0.5;
-        glow.position.z = -modelDepth * 0.58;
+        glow.position.y = height * 0.7;
+        glow.position.z = -modelDepth * 0.62;
+        glow.scale.set(radius * 2.45, height * 1.65, 1);
         glow.renderOrder = 1;
         this.group.add(glow);
         this.upwardGlow = glow;
-        this.geometries.push(geometry);
         this.materials.push(material);
         this.textures.push(texture);
+
+        const beamMaterial = material.clone();
+        const beam = new THREE.Sprite(beamMaterial);
+
+        beam.name = "Portal Rising Beam";
+        beam.position.set(0, height * 0.86, -modelDepth * 0.6);
+        beam.scale.set(radius * 1.05, height * 1.95, 1);
+        beam.material.opacity = PORTAL_UPWARD_GLOW_OPACITY * 0.34;
+        beam.renderOrder = 1;
+        this.group.add(beam);
+        this.upwardBeam = beam;
+        this.materials.push(beamMaterial);
 
     }
 
@@ -164,17 +176,22 @@ export class PortraitPortal {
             const scale = 0.92 + progress * 0.72;
             const fade = 1 - progress;
 
-            ripple.mesh.scale.set(scale, scale, scale * 0.7);
+            ripple.mesh.scale.set(scale, scale * 0.68, 1);
             ripple.mesh.position.y = progress * 0.008;
-            ripple.material.opacity = fade * fade * 0.46;
+            ripple.material.opacity = fade * fade * PORTAL_RIPPLE_OPACITY;
 
         });
 
         const pulse = 0.5 + Math.sin(elapsedTime * 1.8) * 0.5;
 
-        this.coreRing.material.opacity = 0.58 + pulse * 0.18;
-        this.coreRing.scale.setScalar(0.985 + pulse * 0.025);
-        this.upwardGlow.material.opacity = 0.34 + pulse * 0.12;
+        const coreScale = 0.985 + pulse * 0.025;
+
+        this.coreRing.material.opacity = 0.15 + pulse * 0.05;
+        this.coreRing.scale.set(coreScale, coreScale * 0.68, 1);
+        this.upwardGlow.material.opacity =
+            PORTAL_UPWARD_GLOW_OPACITY * (0.84 + pulse * 0.16);
+        this.upwardBeam.material.opacity =
+            PORTAL_UPWARD_GLOW_OPACITY * (0.24 + pulse * 0.12);
 
     }
 
@@ -209,7 +226,7 @@ export class PortraitPortal {
 
 }
 
-function createGlowMaterial(opacity, brightness = 1.5) {
+function createGlowMaterial(opacity, brightness = 1.5, map = null) {
 
     const color = new THREE.Color();
 
@@ -217,8 +234,10 @@ function createGlowMaterial(opacity, brightness = 1.5) {
 
     return new THREE.MeshBasicMaterial({
         color,
+        map,
         transparent: true,
         opacity,
+        alphaTest: map ? 0.006 : 0,
         side: THREE.DoubleSide,
         blending: THREE.AdditiveBlending,
         depthWrite: false,
@@ -227,55 +246,131 @@ function createGlowMaterial(opacity, brightness = 1.5) {
 
 }
 
+function createSoftDiskTexture() {
+
+    const canvas = createTextureCanvas(256);
+    const context = canvas.getContext("2d");
+    const center = canvas.width * 0.5;
+    const gradient = context.createRadialGradient(
+        center,
+        center,
+        0,
+        center,
+        center,
+        center
+    );
+
+    gradient.addColorStop(0, "rgba(255, 255, 255, 0.34)");
+    gradient.addColorStop(0.38, "rgba(255, 255, 255, 0.2)");
+    gradient.addColorStop(0.72, "rgba(255, 255, 255, 0.07)");
+    gradient.addColorStop(0.9, "rgba(255, 255, 255, 0.015)");
+    gradient.addColorStop(1, "rgba(255, 255, 255, 0)");
+    context.fillStyle = gradient;
+    context.fillRect(0, 0, canvas.width, canvas.height);
+
+    return createCanvasTexture(canvas);
+
+}
+
+function createSoftRingTexture() {
+
+    const canvas = createTextureCanvas(256);
+    const context = canvas.getContext("2d");
+    const center = canvas.width * 0.5;
+    const gradient = context.createRadialGradient(
+        center,
+        center,
+        center * 0.56,
+        center,
+        center,
+        center
+    );
+
+    gradient.addColorStop(0, "rgba(255, 255, 255, 0)");
+    gradient.addColorStop(0.47, "rgba(255, 255, 255, 0)");
+    gradient.addColorStop(0.6, "rgba(255, 255, 255, 0.08)");
+    gradient.addColorStop(0.69, "rgba(255, 255, 255, 0.5)");
+    gradient.addColorStop(0.74, "rgba(255, 255, 255, 0.9)");
+    gradient.addColorStop(0.79, "rgba(255, 255, 255, 0.46)");
+    gradient.addColorStop(0.88, "rgba(255, 255, 255, 0.06)");
+    gradient.addColorStop(1, "rgba(255, 255, 255, 0)");
+    context.fillStyle = gradient;
+    context.fillRect(0, 0, canvas.width, canvas.height);
+
+    return createCanvasTexture(canvas);
+
+}
+
 function createVerticalGlowTexture() {
 
     const canvas = document.createElement("canvas");
 
-    canvas.width = 128;
-    canvas.height = 256;
+    canvas.width = 256;
+    canvas.height = 512;
 
     const context = canvas.getContext("2d");
-    const radial = context.createRadialGradient(
-        canvas.width * 0.5,
-        canvas.height,
-        0,
-        canvas.width * 0.5,
-        canvas.height,
-        canvas.height * 0.78
-    );
+    const image = context.createImageData(canvas.width, canvas.height);
 
-    radial.addColorStop(0, "rgba(255, 100, 255, 0.88)");
-    radial.addColorStop(0.22, "rgba(224, 79, 255, 0.48)");
-    radial.addColorStop(0.56, "rgba(142, 42, 220, 0.12)");
-    radial.addColorStop(1, "rgba(82, 22, 150, 0)");
-    context.fillStyle = radial;
-    context.fillRect(0, 0, canvas.width, canvas.height);
+    for (let y = 0; y < canvas.height; y++) {
 
-    context.globalCompositeOperation = "destination-in";
+        const vertical = y / (canvas.height - 1);
+        const beamWidth = 0.1 + vertical * 0.72;
 
-    const horizontalMask = context.createLinearGradient(0, 0, canvas.width, 0);
+        for (let x = 0; x < canvas.width; x++) {
 
-    horizontalMask.addColorStop(0, "rgba(255, 255, 255, 0)");
-    horizontalMask.addColorStop(0.24, "rgba(255, 255, 255, 0.72)");
-    horizontalMask.addColorStop(0.5, "rgba(255, 255, 255, 1)");
-    horizontalMask.addColorStop(0.76, "rgba(255, 255, 255, 0.72)");
-    horizontalMask.addColorStop(1, "rgba(255, 255, 255, 0)");
-    context.fillStyle = horizontalMask;
-    context.fillRect(0, 0, canvas.width, canvas.height);
+            const horizontal = Math.abs(
+                (x / (canvas.width - 1) - 0.5) * 2
+            );
+            const beamDistance = horizontal / beamWidth;
+            const beam = beamDistance < 1
+                ? Math.pow(1 - beamDistance, 2.35) * Math.pow(vertical, 1.35)
+                : 0;
+            const baseDistance = Math.sqrt(
+                Math.pow(horizontal / 0.92, 2) +
+                Math.pow((1 - vertical) / 0.28, 2)
+            );
+            const base = baseDistance < 1
+                ? Math.pow(1 - baseDistance, 2.2)
+                : 0;
+            const alpha = Math.min(1, beam * 0.78 + base * 0.62);
+            const offset = (y * canvas.width + x) * 4;
 
-    const verticalMask = context.createLinearGradient(0, 0, 0, canvas.height);
+            image.data[offset] = 255;
+            image.data[offset + 1] = 255;
+            image.data[offset + 2] = 255;
+            image.data[offset + 3] = Math.round(alpha * 255);
 
-    verticalMask.addColorStop(0, "rgba(255, 255, 255, 0)");
-    verticalMask.addColorStop(0.34, "rgba(255, 255, 255, 0.38)");
-    verticalMask.addColorStop(1, "rgba(255, 255, 255, 1)");
-    context.fillStyle = verticalMask;
-    context.fillRect(0, 0, canvas.width, canvas.height);
+        }
+
+    }
+
+    context.putImageData(image, 0, 0);
+
+    return createCanvasTexture(canvas);
+
+}
+
+function createTextureCanvas(size) {
+
+    const canvas = document.createElement("canvas");
+
+    canvas.width = size;
+    canvas.height = size;
+
+    return canvas;
+
+}
+
+function createCanvasTexture(canvas) {
 
     const texture = new THREE.CanvasTexture(canvas);
 
     texture.colorSpace = THREE.SRGBColorSpace;
     texture.wrapS = THREE.ClampToEdgeWrapping;
     texture.wrapT = THREE.ClampToEdgeWrapping;
+    texture.minFilter = THREE.LinearFilter;
+    texture.magFilter = THREE.LinearFilter;
+    texture.generateMipmaps = false;
     texture.needsUpdate = true;
 
     return texture;

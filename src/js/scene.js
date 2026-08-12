@@ -59,9 +59,9 @@ if (composer) {
     const renderPass = new RenderPass(scene, camera);
     const bloomPass = new UnrealBloomPass(
         new THREE.Vector2(viewport.clientWidth, viewport.clientHeight),
-        0.08,
         0.3,
-        0.88
+        0.55,
+        0.74
     );
     const outputPass = new OutputPass();
 
@@ -98,29 +98,29 @@ controls.enableZoom = false;
 controls.enabled = false;
 controls.target.set(0, 1, 0);
 
-// Violet-black studio rig: broad form light plus narrow editorial rims.
-scene.add(new THREE.HemisphereLight(0x696175, 0x020205, 0.36));
+// Silhouette rig: a dark body held by narrow violet contour lights.
+scene.add(new THREE.HemisphereLight(0x3c3248, 0x010103, 0.1));
 
-const keyLight = new THREE.DirectionalLight(0xe0d6e9, 3.4);
+const keyLight = new THREE.DirectionalLight(0xd5c6df, 0.68);
 keyLight.position.set(-5, 11, 9);
 keyLight.castShadow = true;
 keyLight.shadow.mapSize.set(2048, 2048);
 keyLight.shadow.bias = -0.00015;
 scene.add(keyLight);
 
-const fillLight = new THREE.DirectionalLight(0x77658d, 1.15);
+const fillLight = new THREE.DirectionalLight(0x654d79, 0.22);
 fillLight.position.set(7, 6, 6);
 scene.add(fillLight);
 
-const frontLight = new THREE.DirectionalLight(0xcfc3dc, 1.8);
+const frontLight = new THREE.DirectionalLight(0xb59ec6, 0.18);
 frontLight.position.set(0, 5, 10);
 scene.add(frontLight);
 
-const rimLight = new THREE.DirectionalLight(0xb57acb, 3.8);
+const rimLight = new THREE.DirectionalLight(0xe184ff, 5.2);
 rimLight.position.set(-6, 8, -8);
 scene.add(rimLight);
 
-const coolRimLight = new THREE.DirectionalLight(0x77709e, 1.8);
+const coolRimLight = new THREE.DirectionalLight(0xa989d4, 2.7);
 coolRimLight.position.set(7, 4, -6);
 scene.add(coolRimLight);
 
