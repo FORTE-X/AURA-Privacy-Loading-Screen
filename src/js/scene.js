@@ -5,7 +5,6 @@ import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js";
 import { OutputPass } from "three/examples/jsm/postprocessing/OutputPass.js";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
-import { viewerState } from "./viewerState.js";
 
 const viewport = document.getElementById("viewport");
 const isMobileViewport = window.matchMedia("(max-width: 760px)").matches;
@@ -98,14 +97,6 @@ controls.enableRotate = false;
 controls.enableZoom = false;
 controls.enabled = false;
 controls.target.set(0, 1, 0);
-
-viewerState.defaultView = {
-
-    cameraPosition: camera.position.clone(),
-    controlsTarget: controls.target.clone(),
-    cameraZoom: camera.zoom
-
-};
 
 // Violet-black studio rig: broad form light plus narrow editorial rims.
 scene.add(new THREE.HemisphereLight(0x696175, 0x020205, 0.36));

@@ -2,11 +2,6 @@ import {
     loadModel,
     modelManager
 } from "./loader.js";
-import {
-    camera,
-    controls
-} from "./scene.js";
-import { viewerState } from "./viewerState.js";
 
 const uploadBtn = document.getElementById("uploadBtn");
 
@@ -16,28 +11,7 @@ const status = document.getElementById("status");
 
 const modelList = document.getElementById("modelList");
 
-const resetViewBtn = document.getElementById("resetViewBtn");
-
 const toggleTorsoMarkerBtn = document.getElementById("toggleTorsoMarkerBtn");
-
-function restoreView(view) {
-
-    if (!view) return;
-
-    camera.position.copy(view.cameraPosition);
-    camera.zoom = view.cameraZoom;
-    camera.updateProjectionMatrix();
-    controls.target.copy(view.controlsTarget);
-    controls.update();
-
-}
-
-resetViewBtn.addEventListener("click", () => {
-
-    restoreView(viewerState.savedView ?? viewerState.defaultView);
-    modelManager.resetActiveModelRotation();
-
-});
 
 function renderModelList(models, activeModel) {
 

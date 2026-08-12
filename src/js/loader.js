@@ -11,7 +11,6 @@ import {
 } from "./scene.js";
 
 import { ModelManager } from "./ModelManager.js";
-import { viewerState } from "./viewerState.js";
 import {
     estimateTorsoBounds
 } from "./LightweightTorsoEstimator/LightweightTorsoEstimator.js";
@@ -41,12 +40,6 @@ modelManager.subscribe((models, activeModel) => {
 
     currentModel = activeModel?.model ?? null;
     currentModelContainer = activeModel?.modelContainer ?? null;
-
-});
-
-modelManager.addCleanupHandler(() => {
-
-    viewerState.savedView = null;
 
 });
 
@@ -217,14 +210,6 @@ export function loadModel(file, status) {
             });
 
             scheduleTorsoMarker(modelEntry);
-
-            viewerState.savedView = {
-
-                cameraPosition: camera.position.clone(),
-                controlsTarget: controls.target.clone(),
-                cameraZoom: camera.zoom
-
-            };
 
             status.textContent = "Model Imported Successfully";
 
