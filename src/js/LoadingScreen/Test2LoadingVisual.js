@@ -8,10 +8,8 @@ export const MODEL_FLOAT_AMPLITUDE = 0.045;
 export const MODEL_FLOAT_SPEED = 0.55;
 export const MODEL_TURN_AMPLITUDE = 0.045;
 export const MODEL_TURN_SPEED = 0.32;
-export const LOWER_LIGHT_BREATH_DURATION = 6;
-export const LOWER_LIGHT_MIN_INTENSITY = 3.6;
-export const LOWER_LIGHT_MAX_INTENSITY = 4.8;
-export const LOWER_LIGHT_DISTANCE = 4;
+export const BOTTOM_GLOW_BREATH_DURATION = 6;
+export const BOTTOM_GLOW_DIM_STRENGTH = 0.16;
 
 const gltfLoader = new GLTFLoader();
 const MODEL_URL = "./js/LoadingScreen/assets/test2.glb";
@@ -23,7 +21,7 @@ export class Test2LoadingVisual {
         this.camera = camera;
         this.group = new THREE.Group();
         this.group.name = "Test2 Authored Loading Visual";
-        this.lowerBreathingLight = null;
+        this.emissiveMaterials = [];
         this.disposed = false;
     }
 
@@ -73,25 +71,18 @@ export class Test2LoadingVisual {
 
                 material.needsUpdate = true;
 
+                if (material.emissiveMap) {
+                    this.emissiveMaterials.push({
+                        material,
+                        baseIntensity: material.emissiveIntensity
+                    });
+                }
             });
         });
 
-        this.lowerBreathingLight = new THREE.PointLight(
-            0xef82ff,
-            LOWER_LIGHT_MAX_INTENSITY,
-            LOWER_LIGHT_DISTANCE,
-            2
-        );
-        this.lowerBreathingLight.name = "Lower breathing light";
-        this.lowerBreathingLight.position.set(
-            0,
-            -size.y * 0.24,
-            size.z * 0.75
-        );
-
         this.group.scale.setScalar(scale);
         this.group.position.y = MODEL_VERTICAL_POSITION;
-        this.group.add(model, this.lowerBreathingLight);
+        this.group.add(model);
 
         return true;
     }
@@ -101,18 +92,18 @@ export class Test2LoadingVisual {
 
         const floatWave = Math.sin(elapsedTime * MODEL_FLOAT_SPEED);
         const turnWave = Math.sin(elapsedTime * MODEL_TURN_SPEED);
-        const lightBreath = 0.5 - 0.5 * Math.cos(
-            elapsedTime * Math.PI * 2 / LOWER_LIGHT_BREATH_DURATION
+        const glowBreath = 0.5 - 0.5 * Math.cos(
+            elapsedTime * Math.PI * 2 / BOTTOM_GLOW_BREATH_DURATION
         );
+        const emissiveIntensity = 1 - glowBreath *
+            BOTTOM_GLOW_DIM_STRENGTH;
 
         this.group.position.y = MODEL_VERTICAL_POSITION +
             floatWave * MODEL_FLOAT_AMPLITUDE;
         this.group.rotation.y = turnWave * MODEL_TURN_AMPLITUDE;
-        this.lowerBreathingLight.intensity = THREE.MathUtils.lerp(
-            LOWER_LIGHT_MAX_INTENSITY,
-            LOWER_LIGHT_MIN_INTENSITY,
-            lightBreath
-        );
+        this.emissiveMaterials.forEach(({ material, baseIntensity }) => {
+            material.emissiveIntensity = baseIntensity * emissiveIntensity;
+        });
     }
 
     dispose() {
@@ -122,7 +113,7 @@ export class Test2LoadingVisual {
         this.group.removeFromParent();
         disposeObject3D(this.group);
         this.group.clear();
-        this.lowerBreathingLight = null;
+        this.emissiveMaterials.length = 0;
     }
 }
 

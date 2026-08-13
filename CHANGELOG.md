@@ -98,6 +98,3 @@ Decision options:
   changed its animation to one smooth, low-amplitude breath every three seconds.
 - Removed the pulse-like brightening and changed the lower glow to slowly dim
   from its normal brightness and return over a continuous six-second loop.
-- Corrected the breathing target: the GLB's emissive texture is now completely
-  steady, while a dedicated lower-body light performs the slow dim-and-return
-  cycle.
