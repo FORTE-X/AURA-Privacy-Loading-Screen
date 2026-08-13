@@ -122,3 +122,10 @@ Decision options:
 - Added a compact feathered dark layer behind the copy to preserve legibility.
 - Added fixed-distance camera orbit centered on the artwork, disabled zoom and
   panning, and limited viewing to 18 degrees sideways and 12 degrees vertically.
+
+# Offline iteration: central Brownian particles
+
+- Added one efficient glowing particle field around the center of the model.
+- Added deterministic Brownian motion, drag, and soft center attraction so the
+  particles wander naturally while remaining inside a compact 3D volume.
+- Reduced the particle count on mobile while retaining the same visual style.
