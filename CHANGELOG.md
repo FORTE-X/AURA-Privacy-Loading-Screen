@@ -134,3 +134,5 @@ Decision options:
 - Made every mouse or touch orbit scatter the particles outward again.
 - Added a five-second recovery—twice the configured base return duration—during
   which the particle boundary smoothly contracts back around the model center.
+- Tripled the Brownian particle diameter and doubled the field to 184 particles
+  on desktop and 112 on mobile.

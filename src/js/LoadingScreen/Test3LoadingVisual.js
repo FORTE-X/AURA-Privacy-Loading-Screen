@@ -18,12 +18,12 @@ export const FLOWER_BASE_EMISSIVE_INTENSITY = 1.15;
 export const FLOWER_BLOOM_MIN = 0.84;
 export const FLOWER_BLOOM_MAX = 1.08;
 
-export const PARTICLE_COUNT_DESKTOP = 92;
-export const PARTICLE_COUNT_MOBILE = 56;
+export const PARTICLE_COUNT_DESKTOP = 184;
+export const PARTICLE_COUNT_MOBILE = 112;
 export const PARTICLE_SPREAD_X = 0.95;
 export const PARTICLE_SPREAD_Y = 0.38;
 export const PARTICLE_SPREAD_Z = 0.42;
-export const PARTICLE_SIZE = 0.038;
+export const PARTICLE_SIZE = 0.114;
 export const PARTICLE_OPACITY = 0.96;
 export const PARTICLE_BROWNIAN_FORCE = 0.066;
 export const PARTICLE_CENTERING_FORCE = 0.28;
