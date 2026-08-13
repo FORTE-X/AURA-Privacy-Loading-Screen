@@ -105,3 +105,12 @@ Decision options:
   pelvis to the model's lower cut-off edge.
 - Increased the compact bottom glow's visible intensity by 50% without changing
   its placement, spread, or dimming rhythm.
+
+# Offline iteration: authored model with flowers
+
+- Replaced `test2.glb` with the supplied `test3main2.glb` loading-screen model.
+- Preserved the embedded figure and flower textures and the authored flower
+  arrangement.
+- Added independent deterministic hover and sway to all 13 flower objects.
+- Added subtle pink/lavender emissive color breathing so the flowers animate
+  through the existing bloom treatment without changing the main figure.

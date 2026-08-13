@@ -1,24 +1,24 @@
 import { LoadingScreenStage } from "./LoadingScreen/LoadingScreenStage.js";
-import { Test2LoadingVisual } from "./LoadingScreen/Test2LoadingVisual.js";
+import { Test3LoadingVisual } from "./LoadingScreen/Test3LoadingVisual.js";
 import { camera, renderScene, scene } from "./scene.js";
 
 const loadingScreen = new LoadingScreenStage(scene, camera);
 const loadingStatus = document.getElementById("loadingStatus");
-const test2Visual = new Test2LoadingVisual(camera);
+const test3Visual = new Test3LoadingVisual(camera);
 
 loadingScreen.initialize();
-test2Visual.initialize().then((initialized) => {
+test3Visual.initialize().then((initialized) => {
     if (!initialized) return;
 
-    const added = loadingScreen.addModel(test2Visual.object3D, {
+    const added = loadingScreen.addModel(test3Visual.object3D, {
         update: (deltaTime, elapsedTime) => {
-            test2Visual.update(deltaTime, elapsedTime);
+            test3Visual.update(deltaTime, elapsedTime);
         },
         owned: false
     });
 
     if (!added) {
-        test2Visual.dispose();
+        test3Visual.dispose();
         return;
     }
 
@@ -45,6 +45,6 @@ function animate(currentTime) {
 requestAnimationFrame(animate);
 
 window.addEventListener("pagehide", () => {
-    test2Visual.dispose();
+    test3Visual.dispose();
     loadingScreen.dispose();
 }, { once: true });
