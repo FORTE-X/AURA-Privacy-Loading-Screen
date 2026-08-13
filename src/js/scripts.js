@@ -20,6 +20,7 @@ function animate(currentTime) {
 
     modelManager.models.forEach((entry) => {
         entry.portraitPortal?.update(deltaTime, elapsedTime);
+        entry.frontFloralOverlay?.update(deltaTime, elapsedTime);
     });
 
     controls.update();

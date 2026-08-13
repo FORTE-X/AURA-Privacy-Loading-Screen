@@ -74,3 +74,9 @@ Decision options:
   or deforming it.
 - Added cached loading, uniform portrait-relative scaling, violet-pink glow,
   portrait clipping, and imported-model lifecycle cleanup.
+- Added five fixed focal flower models with ivory-pink-lavender vertex-color
+  gradients and subtle hover, sway, pulse, and centre-glow animation.
+- Made the composition pose-independent and changed portrait framing to ignore
+  extreme arm span, so A-pose and T-pose scans keep the same visual design.
+- Removed five duplicate embedded texture sets from the runtime flower copies,
+  reducing their combined size from about 25 MB to about 138 KB.

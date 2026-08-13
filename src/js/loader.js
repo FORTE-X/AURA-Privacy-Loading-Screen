@@ -35,6 +35,8 @@ export const IMPORTED_MODEL_ROUGHNESS = 0.82;
 export const IMPORTED_MODEL_METALNESS = 0;
 // Hide the lowest 32% of the scan for the fixed upper-body portrait.
 export const PORTRAIT_LOWER_BODY_CUTOFF_RATIO = 0.32;
+export const PORTRAIT_COMPOSITION_WIDTH_TO_HEIGHT = 0.86;
+export const PORTRAIT_CAMERA_MARGIN = 1.14;
 
 // Retained imported-model reference for existing consumers.
 export let currentModel = null;
@@ -136,22 +138,20 @@ export function loadModel(file, status) {
 
             portraitBox.min.y = cutoffY;
 
-            const sphere = portraitBox.getBoundingSphere(
-                new THREE.Sphere()
-            );
-
-            const radius = sphere.radius;
-
-            const modelCenter = sphere.center;
+            const portraitSize = portraitBox.getSize(new THREE.Vector3());
+            const modelCenter = portraitBox.getCenter(new THREE.Vector3());
 
             const fov = THREE.MathUtils.degToRad(camera.fov);
-
-            let distance =
-                radius /
-                Math.sin(fov / 2);
-
-            // Leave enough portrait margin for the animated portal ripples.
-            distance *= 1.02;
+            const halfVerticalView = Math.tan(fov / 2);
+            const compositionWidth = portraitSize.y *
+                PORTRAIT_COMPOSITION_WIDTH_TO_HEIGHT;
+            const verticalDistance = portraitSize.y * 0.5 / halfVerticalView;
+            const horizontalDistance = compositionWidth * 0.5 /
+                Math.max(halfVerticalView * camera.aspect, Number.EPSILON);
+            const distance = Math.max(
+                verticalDistance,
+                horizontalDistance
+            ) * PORTRAIT_CAMERA_MARGIN;
 
             camera.position.set(
 
