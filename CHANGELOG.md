@@ -96,3 +96,5 @@ Decision options:
   floating and turning, and restrained emissive breathing.
 - Kept the authored lower emissive gradient at a stable base brightness and
   changed its animation to one smooth, low-amplitude breath every three seconds.
+- Removed the pulse-like brightening and changed the lower glow to slowly dim
+  from its normal brightness and return over a continuous six-second loop.

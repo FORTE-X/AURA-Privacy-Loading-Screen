@@ -15,7 +15,8 @@ through a dedicated module in this folder. Register each model with
 `Test2LoadingVisual.js` loads `assets/test2.glb` with all four embedded texture
 maps unchanged. It fits the model to the loading-screen camera and adds only a
 slow float and a very small turn. Its authored emissive gradient retains a
-stable base level with one gentle, low-amplitude breath every three seconds.
+stable base level, slowly dims, and smoothly returns over a six-second breathing
+loop.
 
 The build copies everything in `assets/` to the same stable path under `dist`.
 This avoids bundler-specific GLB URL rewriting and is the convention for future
