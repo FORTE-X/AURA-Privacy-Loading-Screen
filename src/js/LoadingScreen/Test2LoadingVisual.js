@@ -11,9 +11,9 @@ export const MODEL_TURN_SPEED = 0.32;
 export const BOTTOM_GLOW_DIM_INTERVAL = 2;
 export const BOTTOM_GLOW_DIM_DURATION = 0.42;
 export const BOTTOM_GLOW_DIM_STRENGTH = 0.5;
-export const BOTTOM_LIGHT_MAX_INTENSITY = 1.8;
+export const BOTTOM_LIGHT_MAX_INTENSITY = 2.7;
 export const BOTTOM_LIGHT_DISTANCE = 2.2;
-export const BOTTOM_GLOW_MAX_OPACITY = 0.26;
+export const BOTTOM_GLOW_MAX_OPACITY = 0.39;
 
 const gltfLoader = new GLTFLoader();
 const MODEL_URL = "./js/LoadingScreen/assets/test2.glb";

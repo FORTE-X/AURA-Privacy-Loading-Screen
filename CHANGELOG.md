@@ -103,3 +103,5 @@ Decision options:
   GLB's authored emissive texture remains steady.
 - Reduced the restored light's intensity and spread, then moved it from the
   pelvis to the model's lower cut-off edge.
+- Increased the compact bottom glow's visible intensity by 50% without changing
+  its placement, spread, or dimming rhythm.
