@@ -129,3 +129,5 @@ Decision options:
 - Added deterministic Brownian motion, drag, and soft center attraction so the
   particles wander naturally while remaining inside a compact 3D volume.
 - Reduced the particle count on mobile while retaining the same visual style.
+- Enlarged the Brownian motes and increased their opacity so individual
+  particles remain clearly visible around the floral silhouette.
