@@ -114,3 +114,11 @@ Decision options:
 - Added independent deterministic hover and sway to all 13 flower objects.
 - Added subtle pink/lavender emissive color breathing so the flowers animate
   through the existing bloom treatment without changing the main figure.
+
+# Offline iteration: full-frame constrained orbit
+
+- Enlarged the complete authored 3D composition to fill more of the screen and
+  intentionally continue behind the lower loading copy.
+- Added a compact feathered dark layer behind the copy to preserve legibility.
+- Added fixed-distance camera orbit centered on the artwork, disabled zoom and
+  panning, and limited viewing to 18 degrees sideways and 12 degrees vertically.

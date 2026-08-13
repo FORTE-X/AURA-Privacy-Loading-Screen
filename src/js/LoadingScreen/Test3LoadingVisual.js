@@ -2,7 +2,7 @@ import * as THREE from "three";
 
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
-export const MODEL_VIEW_HEIGHT_RATIO = 0.46;
+export const MODEL_VIEW_HEIGHT_RATIO = 0.68;
 export const MODEL_VERTICAL_POSITION = 0.75;
 export const MODEL_FLOAT_AMPLITUDE = 0.045;
 export const MODEL_FLOAT_SPEED = 0.55;

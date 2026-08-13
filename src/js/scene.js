@@ -1,5 +1,6 @@
 import * as THREE from "three";
 
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js";
 import { OutputPass } from "three/examples/jsm/postprocessing/OutputPass.js";
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
@@ -8,6 +9,11 @@ import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPa
 const viewport = document.getElementById("viewport");
 const mobileViewport = window.matchMedia("(max-width: 760px)").matches;
 const pixelRatio = Math.min(window.devicePixelRatio, mobileViewport ? 1.25 : 2);
+
+export const ORBIT_TARGET_Y = 0.75;
+export const ORBIT_HORIZONTAL_LIMIT = THREE.MathUtils.degToRad(18);
+export const ORBIT_VERTICAL_LIMIT = THREE.MathUtils.degToRad(12);
+export const ORBIT_ROTATE_SPEED = 0.38;
 
 export const scene = new THREE.Scene();
 scene.background = null;
@@ -27,7 +33,7 @@ export const camera = new THREE.PerspectiveCamera(
     0.1,
     100
 );
-camera.position.set(0, 0.4, 7);
+camera.position.set(0, ORBIT_TARGET_Y, 7);
 
 export const renderer = new THREE.WebGLRenderer({
     antialias: !mobileViewport,
@@ -41,6 +47,19 @@ renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 0.9;
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 viewport.appendChild(renderer.domElement);
+
+export const controls = new OrbitControls(camera, renderer.domElement);
+controls.target.set(0, ORBIT_TARGET_Y, 0);
+controls.enableDamping = true;
+controls.dampingFactor = 0.055;
+controls.enablePan = false;
+controls.enableZoom = false;
+controls.rotateSpeed = ORBIT_ROTATE_SPEED;
+controls.minAzimuthAngle = -ORBIT_HORIZONTAL_LIMIT;
+controls.maxAzimuthAngle = ORBIT_HORIZONTAL_LIMIT;
+controls.minPolarAngle = Math.PI * 0.5 - ORBIT_VERTICAL_LIMIT;
+controls.maxPolarAngle = Math.PI * 0.5 + ORBIT_VERTICAL_LIMIT;
+controls.update();
 
 export const composer = mobileViewport ? null : new EffectComposer(renderer);
 
@@ -62,12 +81,18 @@ if (composer) {
 }
 
 export function renderScene() {
+    controls.update();
+
     if (composer) {
         composer.render();
         return;
     }
 
     renderer.render(scene, camera);
+}
+
+export function disposeSceneControls() {
+    controls.dispose();
 }
 
 window.addEventListener("resize", () => {

@@ -1,6 +1,11 @@
 import { LoadingScreenStage } from "./LoadingScreen/LoadingScreenStage.js";
 import { Test3LoadingVisual } from "./LoadingScreen/Test3LoadingVisual.js";
-import { camera, renderScene, scene } from "./scene.js";
+import {
+    camera,
+    disposeSceneControls,
+    renderScene,
+    scene
+} from "./scene.js";
 
 const loadingScreen = new LoadingScreenStage(scene, camera);
 const loadingStatus = document.getElementById("loadingStatus");
@@ -47,4 +52,5 @@ requestAnimationFrame(animate);
 window.addEventListener("pagehide", () => {
     test3Visual.dispose();
     loadingScreen.dispose();
+    disposeSceneControls();
 }, { once: true });

@@ -54,6 +54,12 @@ body {
     position: absolute;
     z-index: 1;
     inset: 0;
+    cursor: grab;
+    touch-action: none;
+}
+
+#viewport:active {
+    cursor: grabbing;
 }
 
 #viewport canvas {
@@ -99,7 +105,24 @@ body {
     left: 0;
     width: min(88vw, 430px);
     margin: auto;
+    pointer-events: none;
     text-align: center;
+}
+
+.loading-copy::before {
+    position: absolute;
+    z-index: -1;
+    inset: -32px -42px -28px;
+    border-radius: 50%;
+    content: "";
+    pointer-events: none;
+    background: radial-gradient(
+        ellipse at center,
+        rgba(2, 1, 5, 0.94) 0%,
+        rgba(2, 1, 5, 0.78) 48%,
+        rgba(2, 1, 5, 0) 78%
+    );
+    filter: blur(8px);
 }
 
 .eyebrow {
@@ -154,6 +177,10 @@ body {
 
     .loading-copy {
         bottom: calc(32px + env(safe-area-inset-bottom));
+    }
+
+    .loading-copy::before {
+        inset: -30px -18px -24px;
     }
 }
 
