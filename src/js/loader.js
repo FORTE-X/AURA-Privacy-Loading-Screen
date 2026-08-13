@@ -21,6 +21,9 @@ import { PortraitPortal } from "./PortraitPortal/PortraitPortal.js";
 import {
     InvertedHullOutline
 } from "./GlowingOutline/InvertedHullOutline.js";
+import {
+    FrontFloralOverlay
+} from "./FrontFloralOverlay/FrontFloralOverlay.js";
 
 const gltfLoader = new GLTFLoader();
 const objLoader = new OBJLoader();
@@ -210,6 +213,7 @@ export function loadModel(file, status) {
                 cutoffY
             );
             let glowingOutline = null;
+            let frontFloralOverlay = null;
 
             try {
 
@@ -225,15 +229,43 @@ export function loadModel(file, status) {
 
             }
 
+            try {
+
+                frontFloralOverlay = new FrontFloralOverlay(box, cutoffY);
+
+            } catch (error) {
+
+                console.warn("Front floral overlay creation failed.", error);
+
+            }
+
             const modelEntry = modelManager.addModel({
 
                 model: importedModel,
                 file,
                 cameraView,
                 portraitPortal,
-                glowingOutline
+                glowingOutline,
+                frontFloralOverlay
 
             });
+
+            if (frontFloralOverlay) {
+
+                frontFloralOverlay.initialize().then((initialized) => {
+
+                    if (!initialized) return;
+
+                    console.log("Front floral overlay ready.");
+
+                }).catch((error) => {
+
+                    console.warn("Front floral overlay failed.", error);
+                    frontFloralOverlay.dispose();
+
+                });
+
+            }
 
             scheduleTorsoMarker(modelEntry);
 

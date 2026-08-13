@@ -23,7 +23,8 @@ export class ModelManager {
         file,
         cameraView,
         portraitPortal = null,
-        glowingOutline = null
+        glowingOutline = null,
+        frontFloralOverlay = null
     }) {
 
         this.removeActiveModel();
@@ -33,6 +34,9 @@ export class ModelManager {
         modelContainer.add(model);
         if (portraitPortal) modelContainer.add(portraitPortal.object3D);
         if (glowingOutline) modelContainer.add(glowingOutline.object3D);
+        if (frontFloralOverlay) {
+            modelContainer.add(frontFloralOverlay.object3D);
+        }
         model.visible = true;
 
         const entry = {
@@ -45,6 +49,7 @@ export class ModelManager {
             torsoMarker: null,
             portraitPortal,
             glowingOutline,
+            frontFloralOverlay,
             cameraView: {
 
                 position: cameraView.position.clone(),
@@ -96,6 +101,7 @@ export class ModelManager {
         this.cleanupHandlers.forEach((handler) => handler(entry));
         entry.portraitPortal?.dispose();
         entry.glowingOutline?.dispose();
+        entry.frontFloralOverlay?.dispose();
         entry.torsoMarker?.dispose();
         this.scene.remove(entry.modelContainer);
         this.disposeModel(entry.model);

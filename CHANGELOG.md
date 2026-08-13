@@ -67,3 +67,10 @@ Decision options:
 - Keep: merge this branch into `main`, then publish it.
 - Revise: continue editing this branch without affecting `main`.
 - Discard: switch back to `main` and delete this branch.
+# Offline iteration: front floral glow overlay
+
+- Added the authored `b1.glb` arrangement as a fixed front-facing floral layer.
+- Preserved the asset geometry and its original composition without randomizing
+  or deforming it.
+- Added cached loading, uniform portrait-relative scaling, violet-pink glow,
+  portrait clipping, and imported-model lifecycle cleanup.
