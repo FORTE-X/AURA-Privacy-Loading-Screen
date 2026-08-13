@@ -11,9 +11,9 @@ export const MODEL_TURN_SPEED = 0.32;
 export const BOTTOM_GLOW_DIM_INTERVAL = 2;
 export const BOTTOM_GLOW_DIM_DURATION = 0.42;
 export const BOTTOM_GLOW_DIM_STRENGTH = 0.5;
-export const BOTTOM_LIGHT_MAX_INTENSITY = 4.8;
-export const BOTTOM_LIGHT_DISTANCE = 4;
-export const BOTTOM_GLOW_MAX_OPACITY = 0.72;
+export const BOTTOM_LIGHT_MAX_INTENSITY = 1.8;
+export const BOTTOM_LIGHT_DISTANCE = 2.2;
+export const BOTTOM_GLOW_MAX_OPACITY = 0.26;
 
 const gltfLoader = new GLTFLoader();
 const MODEL_URL = "./js/LoadingScreen/assets/test2.glb";
@@ -87,13 +87,13 @@ export class Test2LoadingVisual {
         this.bottomLight.name = "Bright lower pulsing light";
         this.bottomLight.position.set(
             0,
-            -size.y * 0.28,
-            size.z * 0.72
+            -size.y * 0.5,
+            size.z * 0.58
         );
 
         this.bottomGlow = createBottomGlow();
-        this.bottomGlow.position.set(0, -size.y * 0.32, size.z * 0.58);
-        this.bottomGlow.scale.set(size.x * 1.55, size.y * 0.56, 1);
+        this.bottomGlow.position.set(0, -size.y * 0.55, size.z * 0.48);
+        this.bottomGlow.scale.set(size.x * 1.14, size.y * 0.25, 1);
 
         this.group.scale.setScalar(scale);
         this.group.position.y = MODEL_VERTICAL_POSITION;

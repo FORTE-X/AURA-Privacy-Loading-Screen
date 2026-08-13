@@ -101,3 +101,5 @@ Decision options:
 - Restored the distinct bright magenta lower light and its visible gradient;
   only this dedicated light now performs the two-second 50% dim cycle while the
   GLB's authored emissive texture remains steady.
+- Reduced the restored light's intensity and spread, then moved it from the
+  pelvis to the model's lower cut-off edge.
