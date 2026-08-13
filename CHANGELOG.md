@@ -94,5 +94,5 @@ Decision options:
 - Preserved its embedded base-color, roughness, specular, and emissive maps.
 - Added soft neutral/violet stage lighting, responsive camera fitting, gentle
   floating and turning, and restrained emissive breathing.
-- Stabilized the authored emissive glow and replaced continuous breathing with
-  one brief, soft dim pulse every three seconds.
+- Kept the authored lower emissive gradient at a stable base brightness and
+  changed its animation to one smooth, low-amplitude breath every three seconds.
