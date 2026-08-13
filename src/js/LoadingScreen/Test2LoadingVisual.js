@@ -8,7 +8,9 @@ export const MODEL_FLOAT_AMPLITUDE = 0.045;
 export const MODEL_FLOAT_SPEED = 0.55;
 export const MODEL_TURN_AMPLITUDE = 0.045;
 export const MODEL_TURN_SPEED = 0.32;
-export const MODEL_EMISSIVE_PULSE = 0.08;
+export const MODEL_GLOW_DIP_INTERVAL = 3;
+export const MODEL_GLOW_DIP_DURATION = 0.42;
+export const MODEL_GLOW_DIP_STRENGTH = 0.24;
 
 const gltfLoader = new GLTFLoader();
 const MODEL_URL = "./js/LoadingScreen/assets/test2.glb";
@@ -91,15 +93,21 @@ export class Test2LoadingVisual {
 
         const floatWave = Math.sin(elapsedTime * MODEL_FLOAT_SPEED);
         const turnWave = Math.sin(elapsedTime * MODEL_TURN_SPEED);
-        const emissiveWave = 1 + Math.sin(
-            elapsedTime * 0.72
-        ) * MODEL_EMISSIVE_PULSE;
+        const glowCycleTime = elapsedTime % MODEL_GLOW_DIP_INTERVAL;
+        const glowDipStart = MODEL_GLOW_DIP_INTERVAL -
+            MODEL_GLOW_DIP_DURATION;
+        const glowDipProgress = glowCycleTime >= glowDipStart
+            ? (glowCycleTime - glowDipStart) / MODEL_GLOW_DIP_DURATION
+            : 0;
+        const glowDip = Math.sin(glowDipProgress * Math.PI) *
+            MODEL_GLOW_DIP_STRENGTH;
+        const emissiveIntensity = 1 - glowDip;
 
         this.group.position.y = MODEL_VERTICAL_POSITION +
             floatWave * MODEL_FLOAT_AMPLITUDE;
         this.group.rotation.y = turnWave * MODEL_TURN_AMPLITUDE;
         this.emissiveMaterials.forEach(({ material, baseIntensity }) => {
-            material.emissiveIntensity = baseIntensity * emissiveWave;
+            material.emissiveIntensity = baseIntensity * emissiveIntensity;
         });
     }
 
