@@ -80,3 +80,11 @@ Decision options:
   extreme arm span, so A-pose and T-pose scans keep the same visual design.
 - Removed five duplicate embedded texture sets from the runtime flower copies,
   reducing their combined size from about 25 MB to about 138 KB.
+# Offline reset: authored loading screen
+
+- Removed body-scan importing and the model-manager interface.
+- Removed torso analysis, torso markers, landmarks, portal fitting, glowing
+  scan outlines, and the pose-dependent floral overlay pipeline.
+- Removed every runtime asset used by the previous imported-model design.
+- Added a clean full-screen loading interface and a dedicated lifecycle stage
+  for future project-authored GLB models and their lightweight animations.

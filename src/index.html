@@ -2,103 +2,34 @@
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width,initial-scale=1">
-
-    <title>AURA Privacy Viewer</title>
-
-    <link rel="stylesheet"href="./css/style.css">
-
+    <meta name="theme-color" content="#06040b">
+    <title>AURA</title>
+    <link rel="stylesheet" href="./css/style.css">
 </head>
 
 <body>
+    <main id="loadingScreen" aria-live="polite">
+        <div id="viewport" aria-hidden="true"></div>
 
-<div id="app">
+        <header class="brand">
+            <span class="brand-name">AURA</span>
+            <span class="brand-subtitle">Silhouette Experience</span>
+        </header>
 
-    <aside id="sidebar">
+        <section class="loading-copy">
+            <p class="eyebrow">Private by design</p>
+            <h1>Preparing your experience</h1>
+            <p id="loadingStatus">Loading visual scene</p>
 
-        <div class="logo">
-
-            <span class="logo-name">AURA</span>
-            <span class="logo-subtitle">Model Manager</span>
-
-        </div>
-
-        <div class="card model-card">
-
-            <h3>Imported Models</h3>
-
-            <div id="modelList" class="model-list">
-
-                <p class="model-list-empty">No imported models</p>
-
-            </div>
-
-        </div>
-
-        <div class="card import-card">
-
-            <h3>Import Scan</h3>
-
-            <button id="uploadBtn" data-mobile-label="Upload">
-
-                Upload Body Scan
-
-            </button>
-
-            <input
-            type="file"
-            id="fileInput"
-            accept=".glb,.gltf,.obj,.fbx"
-            hidden>
-
-        </div>
-
-        <div class="card privacy-card">
-
-            <h3>Privacy</h3>
-
-            <p id="status">
-
-                Waiting for upload...
-
-            </p>
-
-        </div>
-
-        <section class="card viewer-controls-card">
-            <h3>Viewer Controls</h3>
-
-            <button id="toggleTorsoMarkerBtn" type="button" disabled>
-                Show Torso Marker
-            </button>
-        </section>
-
-        <section class="card navigation-help-card">
-            <h3>Navigation Help</h3>
-
-            <div class="help-row">
-                <span class="help-action">Portrait View</span>
-                <span class="help-description">Locked to the fitted front view</span>
-            </div>
-
-            <div class="help-row">
-                <span class="help-action">Torso Marker</span>
-                <span class="help-description">Show or hide the estimated torso bounds</span>
+            <div class="progress-track" aria-hidden="true">
+                <span class="progress-glow"></span>
             </div>
         </section>
+    </main>
 
-    </aside>
-
-    <main id="viewport"></main>
-
-</div>
-
-<script type="module"
-src="./js/scripts.js"></script>
-
+    <script type="module" src="./js/scripts.js"></script>
 </body>
 
 </html>

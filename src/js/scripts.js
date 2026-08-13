@@ -1,32 +1,23 @@
-import {
-    renderScene,
-    controls
-} from "./scene.js";
-import { modelManager } from "./loader.js";
+import { LoadingScreenStage } from "./LoadingScreen/LoadingScreenStage.js";
+import { camera, renderScene, scene } from "./scene.js";
 
-import "./ui.js";
+const loadingScreen = new LoadingScreenStage(scene, camera);
+loadingScreen.initialize();
 
 let previousFrameTime = performance.now();
 let elapsedTime = 0;
 
 function animate(currentTime) {
-
     requestAnimationFrame(animate);
 
     const deltaTime = Math.min((currentTime - previousFrameTime) / 1000, 0.05);
-
     previousFrameTime = currentTime;
     elapsedTime += deltaTime;
 
-    modelManager.models.forEach((entry) => {
-        entry.portraitPortal?.update(deltaTime, elapsedTime);
-        entry.frontFloralOverlay?.update(deltaTime, elapsedTime);
-    });
-
-    controls.update();
-
+    loadingScreen.update(deltaTime, elapsedTime);
     renderScene();
-
 }
 
 requestAnimationFrame(animate);
+
+window.addEventListener("pagehide", () => loadingScreen.dispose(), { once: true });
