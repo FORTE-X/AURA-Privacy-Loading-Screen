@@ -8,8 +8,9 @@ export const MODEL_FLOAT_AMPLITUDE = 0.045;
 export const MODEL_FLOAT_SPEED = 0.55;
 export const MODEL_TURN_AMPLITUDE = 0.045;
 export const MODEL_TURN_SPEED = 0.32;
-export const BOTTOM_GLOW_BREATH_DURATION = 3;
-export const BOTTOM_GLOW_BREATH_STRENGTH = 0.08;
+export const BOTTOM_GLOW_DIM_INTERVAL = 2;
+export const BOTTOM_GLOW_DIM_DURATION = 0.42;
+export const BOTTOM_GLOW_DIM_STRENGTH = 0.5;
 
 const gltfLoader = new GLTFLoader();
 const MODEL_URL = "./js/LoadingScreen/assets/test2.glb";
@@ -92,11 +93,15 @@ export class Test2LoadingVisual {
 
         const floatWave = Math.sin(elapsedTime * MODEL_FLOAT_SPEED);
         const turnWave = Math.sin(elapsedTime * MODEL_TURN_SPEED);
-        const glowBreath = Math.sin(
-            elapsedTime * Math.PI * 2 / BOTTOM_GLOW_BREATH_DURATION
-        );
-        const emissiveIntensity = 1 + glowBreath *
-            BOTTOM_GLOW_BREATH_STRENGTH;
+        const glowCycleTime = elapsedTime % BOTTOM_GLOW_DIM_INTERVAL;
+        const glowDimStart = BOTTOM_GLOW_DIM_INTERVAL -
+            BOTTOM_GLOW_DIM_DURATION;
+        const glowDimProgress = glowCycleTime >= glowDimStart
+            ? (glowCycleTime - glowDimStart) / BOTTOM_GLOW_DIM_DURATION
+            : 0;
+        const glowDim = Math.sin(glowDimProgress * Math.PI) *
+            BOTTOM_GLOW_DIM_STRENGTH;
+        const emissiveIntensity = 1 - glowDim;
 
         this.group.position.y = MODEL_VERTICAL_POSITION +
             floatWave * MODEL_FLOAT_AMPLITUDE;
