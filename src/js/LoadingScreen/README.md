@@ -30,6 +30,9 @@ horizontal and vertical rotation limits.
 A single efficient `THREE.Points` field adds soft particles around the central
 torso. The particles use a bounded Brownian random walk, so they drift in varied
 directions but remain gathered around the composition instead of escaping.
+Starting any mouse or touch orbit scatters the field outward again. Its bounded
+volume then contracts over five seconds—twice the configured 2.5-second base
+return duration—while Brownian motion continues.
 
 The build copies everything in `assets/` to the same stable path under `dist`.
 This avoids bundler-specific GLB URL rewriting and is the convention for future

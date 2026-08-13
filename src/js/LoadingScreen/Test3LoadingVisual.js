@@ -28,6 +28,10 @@ export const PARTICLE_OPACITY = 0.96;
 export const PARTICLE_BROWNIAN_FORCE = 0.066;
 export const PARTICLE_CENTERING_FORCE = 0.28;
 export const PARTICLE_DRAG = 1.9;
+export const PARTICLE_BASE_RETURN_DURATION = 2.5;
+export const PARTICLE_SCATTER_RETURN_MULTIPLIER = 2;
+export const PARTICLE_SCATTER_RADIUS = 2;
+export const PARTICLE_SCATTER_IMPULSE = 0.16;
 
 export const BOTTOM_GLOW_DIM_INTERVAL = 2;
 export const BOTTOM_GLOW_DIM_DURATION = 0.42;
@@ -61,6 +65,10 @@ export class Test3LoadingVisual {
 
     get object3D() {
         return this.group;
+    }
+
+    scatterParticles() {
+        scatterParticleField(this.particleField);
     }
 
     async initialize() {
@@ -300,7 +308,10 @@ function createParticleField(size) {
         velocities,
         center,
         radii,
-        randomState: 0x51f15e3d
+        randomState: 0x51f15e3d,
+        scatterDuration: PARTICLE_BASE_RETURN_DURATION *
+            PARTICLE_SCATTER_RETURN_MULTIPLIER,
+        scatterRemaining: 0
     };
 }
 
@@ -310,6 +321,16 @@ function updateParticleField(field, deltaTime) {
     const timeStep = Math.min(deltaTime, 1 / 30);
     const noiseScale = PARTICLE_BROWNIAN_FORCE * Math.sqrt(timeStep);
     const drag = Math.exp(-PARTICLE_DRAG * timeStep);
+    const scatterProgress = field.scatterRemaining > 0
+        ? 1 - field.scatterRemaining / field.scatterDuration
+        : 1;
+    const easedRecovery = scatterProgress * scatterProgress *
+        (3 - 2 * scatterProgress);
+    const allowedRadius = THREE.MathUtils.lerp(
+        PARTICLE_SCATTER_RADIUS,
+        1,
+        easedRecovery
+    );
 
     for (let offset = 0; offset < field.positions.length; offset += 3) {
         const dx = field.positions[offset] - field.center.x;
@@ -343,8 +364,8 @@ function updateParticleField(field, deltaTime) {
                 field.radii.z, 2)
         );
 
-        if (normalizedRadius > 1) {
-            const correction = 1 / normalizedRadius;
+        if (normalizedRadius > allowedRadius) {
+            const correction = allowedRadius / normalizedRadius;
 
             field.positions[offset] = field.center.x +
                 (field.positions[offset] - field.center.x) * correction;
@@ -358,6 +379,57 @@ function updateParticleField(field, deltaTime) {
         }
     }
 
+    field.scatterRemaining = Math.max(
+        0,
+        field.scatterRemaining - timeStep
+    );
+    field.points.geometry.attributes.position.needsUpdate = true;
+}
+
+function scatterParticleField(field) {
+    if (!field) return;
+
+    for (let offset = 0; offset < field.positions.length; offset += 3) {
+        let nx = (field.positions[offset] - field.center.x) / field.radii.x;
+        let ny = (field.positions[offset + 1] - field.center.y) /
+            field.radii.y;
+        let nz = (field.positions[offset + 2] - field.center.z) /
+            field.radii.z;
+        let length = Math.hypot(nx, ny, nz);
+
+        if (length < 0.001) {
+            const azimuth = nextRandom(field) * Math.PI * 2;
+            const vertical = nextRandom(field) * 2 - 1;
+            const horizontal = Math.sqrt(1 - vertical * vertical);
+
+            nx = Math.cos(azimuth) * horizontal;
+            ny = vertical;
+            nz = Math.sin(azimuth) * horizontal;
+            length = 1;
+        }
+
+        nx /= length;
+        ny /= length;
+        nz /= length;
+
+        const scatterRadius = THREE.MathUtils.lerp(
+            1.18,
+            PARTICLE_SCATTER_RADIUS,
+            nextRandom(field)
+        );
+        field.positions[offset] = field.center.x +
+            nx * field.radii.x * scatterRadius;
+        field.positions[offset + 1] = field.center.y +
+            ny * field.radii.y * scatterRadius;
+        field.positions[offset + 2] = field.center.z +
+            nz * field.radii.z * scatterRadius;
+
+        field.velocities[offset] = nx * PARTICLE_SCATTER_IMPULSE;
+        field.velocities[offset + 1] = ny * PARTICLE_SCATTER_IMPULSE;
+        field.velocities[offset + 2] = nz * PARTICLE_SCATTER_IMPULSE;
+    }
+
+    field.scatterRemaining = field.scatterDuration;
     field.points.geometry.attributes.position.needsUpdate = true;
 }
 

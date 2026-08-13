@@ -131,3 +131,6 @@ Decision options:
 - Reduced the particle count on mobile while retaining the same visual style.
 - Enlarged the Brownian motes and increased their opacity so individual
   particles remain clearly visible around the floral silhouette.
+- Made every mouse or touch orbit scatter the particles outward again.
+- Added a five-second recovery—twice the configured base return duration—during
+  which the particle boundary smoothly contracts back around the model center.

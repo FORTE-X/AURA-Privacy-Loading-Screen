@@ -2,6 +2,7 @@ import { LoadingScreenStage } from "./LoadingScreen/LoadingScreenStage.js";
 import { Test3LoadingVisual } from "./LoadingScreen/Test3LoadingVisual.js";
 import {
     camera,
+    controls,
     disposeSceneControls,
     renderScene,
     scene
@@ -10,8 +11,10 @@ import {
 const loadingScreen = new LoadingScreenStage(scene, camera);
 const loadingStatus = document.getElementById("loadingStatus");
 const test3Visual = new Test3LoadingVisual(camera);
+const handleModelInteraction = () => test3Visual.scatterParticles();
 
 loadingScreen.initialize();
+controls.addEventListener("start", handleModelInteraction);
 test3Visual.initialize().then((initialized) => {
     if (!initialized) return;
 
@@ -50,6 +53,7 @@ function animate(currentTime) {
 requestAnimationFrame(animate);
 
 window.addEventListener("pagehide", () => {
+    controls.removeEventListener("start", handleModelInteraction);
     test3Visual.dispose();
     loadingScreen.dispose();
     disposeSceneControls();
