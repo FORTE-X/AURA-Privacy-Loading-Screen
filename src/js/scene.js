@@ -13,6 +13,14 @@ export const scene = new THREE.Scene();
 scene.background = null;
 scene.fog = new THREE.FogExp2(0x050309, 0.02);
 
+const ambientLight = new THREE.HemisphereLight(0x9e83b0, 0x08050d, 0.5);
+const keyLight = new THREE.DirectionalLight(0xffe8f7, 1.05);
+const violetRimLight = new THREE.DirectionalLight(0xa978ff, 0.8);
+
+keyLight.position.set(-3, 5, 6);
+violetRimLight.position.set(4, 2, -3);
+scene.add(ambientLight, keyLight, violetRimLight);
+
 export const camera = new THREE.PerspectiveCamera(
     42,
     viewport.clientWidth / viewport.clientHeight,

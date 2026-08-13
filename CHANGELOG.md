@@ -88,3 +88,9 @@ Decision options:
 - Removed every runtime asset used by the previous imported-model design.
 - Added a clean full-screen loading interface and a dedicated lifecycle stage
   for future project-authored GLB models and their lightweight animations.
+# Offline iteration: first authored loading model
+
+- Added `test2.glb` as the central loading-screen visual.
+- Preserved its embedded base-color, roughness, specular, and emissive maps.
+- Added soft neutral/violet stage lighting, responsive camera fitting, gentle
+  floating and turning, and restrained emissive breathing.
