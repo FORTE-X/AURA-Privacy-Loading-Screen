@@ -98,3 +98,6 @@ Decision options:
   changed its animation to one smooth, low-amplitude breath every three seconds.
 - Kept the lower glow steady between events and changed its timing to one smooth
   50% dim-and-return every two seconds.
+- Restored the distinct bright magenta lower light and its visible gradient;
+  only this dedicated light now performs the two-second 50% dim cycle while the
+  GLB's authored emissive texture remains steady.

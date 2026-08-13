@@ -11,6 +11,9 @@ export const MODEL_TURN_SPEED = 0.32;
 export const BOTTOM_GLOW_DIM_INTERVAL = 2;
 export const BOTTOM_GLOW_DIM_DURATION = 0.42;
 export const BOTTOM_GLOW_DIM_STRENGTH = 0.5;
+export const BOTTOM_LIGHT_MAX_INTENSITY = 4.8;
+export const BOTTOM_LIGHT_DISTANCE = 4;
+export const BOTTOM_GLOW_MAX_OPACITY = 0.72;
 
 const gltfLoader = new GLTFLoader();
 const MODEL_URL = "./js/LoadingScreen/assets/test2.glb";
@@ -22,7 +25,8 @@ export class Test2LoadingVisual {
         this.camera = camera;
         this.group = new THREE.Group();
         this.group.name = "Test2 Authored Loading Visual";
-        this.emissiveMaterials = [];
+        this.bottomLight = null;
+        this.bottomGlow = null;
         this.disposed = false;
     }
 
@@ -71,19 +75,29 @@ export class Test2LoadingVisual {
                 if (!material) return;
 
                 material.needsUpdate = true;
-
-                if (material.emissiveMap) {
-                    this.emissiveMaterials.push({
-                        material,
-                        baseIntensity: material.emissiveIntensity
-                    });
-                }
             });
         });
 
+        this.bottomLight = new THREE.PointLight(
+            0xef82ff,
+            BOTTOM_LIGHT_MAX_INTENSITY,
+            BOTTOM_LIGHT_DISTANCE,
+            2
+        );
+        this.bottomLight.name = "Bright lower pulsing light";
+        this.bottomLight.position.set(
+            0,
+            -size.y * 0.28,
+            size.z * 0.72
+        );
+
+        this.bottomGlow = createBottomGlow();
+        this.bottomGlow.position.set(0, -size.y * 0.32, size.z * 0.58);
+        this.bottomGlow.scale.set(size.x * 1.55, size.y * 0.56, 1);
+
         this.group.scale.setScalar(scale);
         this.group.position.y = MODEL_VERTICAL_POSITION;
-        this.group.add(model);
+        this.group.add(model, this.bottomLight, this.bottomGlow);
 
         return true;
     }
@@ -101,14 +115,15 @@ export class Test2LoadingVisual {
             : 0;
         const glowDim = Math.sin(glowDimProgress * Math.PI) *
             BOTTOM_GLOW_DIM_STRENGTH;
-        const emissiveIntensity = 1 - glowDim;
+        const glowBrightness = 1 - glowDim;
 
         this.group.position.y = MODEL_VERTICAL_POSITION +
             floatWave * MODEL_FLOAT_AMPLITUDE;
         this.group.rotation.y = turnWave * MODEL_TURN_AMPLITUDE;
-        this.emissiveMaterials.forEach(({ material, baseIntensity }) => {
-            material.emissiveIntensity = baseIntensity * emissiveIntensity;
-        });
+        this.bottomLight.intensity = BOTTOM_LIGHT_MAX_INTENSITY *
+            glowBrightness;
+        this.bottomGlow.material.opacity = BOTTOM_GLOW_MAX_OPACITY *
+            glowBrightness;
     }
 
     dispose() {
@@ -118,8 +133,53 @@ export class Test2LoadingVisual {
         this.group.removeFromParent();
         disposeObject3D(this.group);
         this.group.clear();
-        this.emissiveMaterials.length = 0;
+        this.bottomLight = null;
+        this.bottomGlow = null;
     }
+}
+
+function createBottomGlow() {
+    const canvas = document.createElement("canvas");
+    const size = 256;
+    const center = size * 0.5;
+
+    canvas.width = size;
+    canvas.height = size;
+
+    const context = canvas.getContext("2d");
+    const gradient = context.createRadialGradient(
+        center,
+        center,
+        0,
+        center,
+        center,
+        center
+    );
+
+    gradient.addColorStop(0, "rgba(255, 235, 255, 1)");
+    gradient.addColorStop(0.18, "rgba(250, 154, 255, 0.9)");
+    gradient.addColorStop(0.5, "rgba(190, 68, 255, 0.42)");
+    gradient.addColorStop(1, "rgba(112, 20, 190, 0)");
+    context.fillStyle = gradient;
+    context.fillRect(0, 0, size, size);
+
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.colorSpace = THREE.SRGBColorSpace;
+
+    const material = new THREE.SpriteMaterial({
+        map: texture,
+        transparent: true,
+        opacity: BOTTOM_GLOW_MAX_OPACITY,
+        depthTest: false,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+        toneMapped: false
+    });
+    const glow = new THREE.Sprite(material);
+
+    glow.name = "Bright lower glow";
+    glow.renderOrder = 10;
+    return glow;
 }
 
 function disposeObject3D(object) {
@@ -128,7 +188,7 @@ function disposeObject3D(object) {
     const textures = new Set();
 
     object.traverse((child) => {
-        if (!child.isMesh) return;
+        if (!child.isMesh && !child.isSprite) return;
 
         if (child.geometry && !geometries.has(child.geometry)) {
             geometries.add(child.geometry);
