@@ -12,11 +12,9 @@ export const PRIVACY_BOX_CAMERA_DISTANCE = 4.2;
 export const PRIVACY_BOX_HOVER_AMPLITUDE = 0.008;
 export const PRIVACY_BOX_HOVER_SPEED = 1.05;
 export const PRIVACY_BOX_BREATH_SPEED = 0.82;
-export const PRIVACY_BOX_GLOW_MIN = 0.88;
-export const PRIVACY_BOX_GLOW_MAX = 1.52;
-export const PRIVACY_BOX_CONTACT_PULSE_DURATION = 0.48;
-export const PRIVACY_BOX_CONTACT_PULSE_STRENGTH = 0.82;
-export const PRIVACY_BOX_CONTACT_PULSE_SCALE = 0.055;
+export const PRIVACY_BOX_GLOW_MIN = 1.04;
+export const PRIVACY_BOX_GLOW_MAX = 1.74;
+export const PRIVACY_BOX_PROXIMITY_GLOW_STRENGTH = 1.15;
 
 const BOX_URL = "./js/LoadingScreen/assets/boxmain.glb";
 const gltfLoader = new GLTFLoader();
@@ -39,7 +37,7 @@ export class PrivacyBoxVisual {
         this.screenPoint = new THREE.Vector3();
         this.viewDirection = new THREE.Vector3();
         this.hoverOffset = new THREE.Vector3();
-        this.contactPulseRemaining = 0;
+        this.butterflyProximityGlow = 0;
     }
 
     get object3D() {
@@ -54,8 +52,8 @@ export class PrivacyBoxVisual {
         return this.arrivalAnchor.getWorldPosition(target);
     }
 
-    pulseOnButterflyContact() {
-        this.contactPulseRemaining = PRIVACY_BOX_CONTACT_PULSE_DURATION;
+    setButterflyProximityGlow(strength) {
+        this.butterflyProximityGlow = THREE.MathUtils.clamp(strength, 0, 1);
     }
 
     async initialize() {
@@ -110,7 +108,7 @@ export class PrivacyBoxVisual {
         return true;
     }
 
-    update(deltaTime, elapsedTime) {
+    update(_deltaTime, elapsedTime) {
         if (this.disposed || !this.loaded) return;
 
         const isMobile = this.mobileViewport.matches;
@@ -129,14 +127,6 @@ export class PrivacyBoxVisual {
             PRIVACY_BOX_GLOW_MAX,
             breathWave
         );
-        const pulseProgress = this.contactPulseRemaining > 0
-            ? 1 - this.contactPulseRemaining /
-                PRIVACY_BOX_CONTACT_PULSE_DURATION
-            : 1;
-        const pulseWave = this.contactPulseRemaining > 0
-            ? Math.exp(-pulseProgress * 3.2) *
-                (0.78 + 0.22 * Math.cos(pulseProgress * Math.PI * 2))
-            : 0;
 
         this.anchorNdc.set(
             isMobile
@@ -167,19 +157,14 @@ export class PrivacyBoxVisual {
         this.group.quaternion.copy(this.camera.quaternion);
 
         const scale = visibleCameraHeight * screenHeight / this.visibleHeight;
-        this.group.scale.setScalar(
-            scale * (1 + pulseWave * PRIVACY_BOX_CONTACT_PULSE_SCALE)
-        );
+        this.group.scale.setScalar(scale);
 
         this.emissiveMaterials.forEach((entry) => {
             entry.material.emissiveIntensity = entry.authoredIntensity *
                 glowMultiplier *
-                (1 + pulseWave * PRIVACY_BOX_CONTACT_PULSE_STRENGTH);
+                (1 + this.butterflyProximityGlow *
+                    PRIVACY_BOX_PROXIMITY_GLOW_STRENGTH);
         });
-        this.contactPulseRemaining = Math.max(
-            0,
-            this.contactPulseRemaining - deltaTime
-        );
     }
 
     dispose() {
@@ -190,7 +175,7 @@ export class PrivacyBoxVisual {
         disposeObject3D(this.group);
         this.group.clear();
         this.emissiveMaterials.length = 0;
-        this.contactPulseRemaining = 0;
+        this.butterflyProximityGlow = 0;
         this.loaded = false;
     }
 }

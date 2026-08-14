@@ -76,7 +76,6 @@ export class ButterflyStreamVisual {
         this.flightButterflies = [];
         this.arrivalGlowTexture = null;
         this.lastFlightCycle = -1;
-        this.lastContactCycle = -1;
         this.timelineStart = null;
         this.hostSize = new THREE.Vector3();
         this.launchPosition = new THREE.Vector3();
@@ -229,6 +228,7 @@ export class ButterflyStreamVisual {
         const timeline = elapsedTime - this.timelineStart;
 
         if (timeline < BUTTERFLY_FIRST_FLIGHT_DELAY) {
+            this.privacyBoxVisual.setButterflyProximityGlow(0);
             this.hideFlightButterflies();
             return;
         }
@@ -239,14 +239,9 @@ export class ButterflyStreamVisual {
 
         if (cycle !== this.lastFlightCycle) this.beginFlight(cycle);
 
-        if (cycleTime >= BUTTERFLY_FLIGHT_DURATION &&
-            cycle !== this.lastContactCycle) {
-            this.lastContactCycle = cycle;
-            this.privacyBoxVisual.pulseOnButterflyContact();
-        }
-
         if (cycleTime > BUTTERFLY_FLIGHT_DURATION +
             BUTTERFLY_ARRIVAL_GLOW_DURATION) {
+            this.privacyBoxVisual.setButterflyProximityGlow(0);
             this.hideFlightButterflies();
             return;
         }
@@ -277,6 +272,8 @@ export class ButterflyStreamVisual {
             const glowProgress = (cycleTime - BUTTERFLY_FLIGHT_DURATION) /
                 BUTTERFLY_ARRIVAL_GLOW_DURATION;
 
+            this.privacyBoxVisual.setButterflyProximityGlow(1 - glowProgress);
+
             this.flightButterflies.forEach((butterfly) => {
                 butterfly.wrapper.visible = false;
                 butterfly.glow.visible = true;
@@ -299,6 +296,7 @@ export class ButterflyStreamVisual {
             0,
             1
         );
+        let closestProximity = 0;
 
         this.flightButterflies.forEach((butterfly, index) => {
             butterfly.wrapper.visible = true;
@@ -337,6 +335,16 @@ export class ButterflyStreamVisual {
                 0.64,
                 1
             );
+            const distanceToBox = butterfly.pathPosition.distanceTo(
+                this.targetPosition
+            );
+            const proximity = 1 - THREE.MathUtils.smoothstep(
+                distanceToBox,
+                hostWorldHeight * 0.025,
+                hostWorldHeight * 0.42
+            );
+
+            closestProximity = Math.max(closestProximity, proximity);
 
             butterfly.wrapper.position.copy(butterfly.pathPosition);
             butterfly.wrapper.quaternion.copy(this.camera.quaternion);
@@ -359,6 +367,8 @@ export class ButterflyStreamVisual {
             butterfly.glow.material.opacity = arrivalStrength *
                 BUTTERFLY_ARRIVAL_GLOW_OPACITY;
         });
+
+        this.privacyBoxVisual.setButterflyProximityGlow(closestProximity);
     }
 
     evaluateFlightPath(progress, index, elapsedTime, hostHeight, target) {
@@ -431,7 +441,7 @@ export class ButterflyStreamVisual {
         this.ambientButterflies.length = 0;
         this.flightButterflies.length = 0;
         this.arrivalGlowTexture = null;
-        this.lastContactCycle = -1;
+        this.privacyBoxVisual.setButterflyProximityGlow(0);
         this.initialized = false;
     }
 }

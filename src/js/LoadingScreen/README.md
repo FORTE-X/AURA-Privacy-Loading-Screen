@@ -47,9 +47,10 @@ small, differently sized butterflies flap and hover close to the woman while
 facing inward. At five-second intervals, a larger pink-and-purple pair emerges
 from behind the woman. They weave past one another, flap toward the box, shrink
 into its arrival anchor, and leave a short colored glow as they disappear. Their
-contact immediately triggers one brief brightness-and-scale pulse in the box,
-which then returns to its normal breathing glow. The safe box remains
-camera-anchored and does not inherit the woman's rotation.
+distance from the box continuously drives its brightness: the box grows
+brighter as they approach, peaks at the opening, and dims back to its brighter
+baseline breathing glow as they disappear. The safe box remains camera-anchored
+and does not inherit the woman's rotation.
 
 The build copies everything in `assets/` to the same stable path under `dist`.
 This avoids bundler-specific GLB URL rewriting and is the convention for future
