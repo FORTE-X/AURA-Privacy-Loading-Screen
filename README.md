@@ -4,7 +4,7 @@ A responsive Three.js privacy-loading experience for AURA. Selecting a supported
 
 ## Live website
 
-[Open the AURA team preview](https://forte-x.github.io/Aura-Model-loading-Screen-Live/)
+[Open the AURA team preview](https://forte-x.github.io/Aura-Model-loading-Screen-Public/)
 
 The interface adapts automatically:
 
@@ -45,16 +45,7 @@ The optimized static website is written to `dist/`. Asset paths are relative, so
 
 ## Deployment
 
-The editable project and its history live in the private `Aura-Model-loading-Screen` repository. The public `Aura-Model-loading-Screen-Live` repository contains only the optimized static build and publishes its `main` branch over HTTPS with GitHub Pages.
-
-To prepare a new release:
-
-```bash
-npm ci
-npm run build
-```
-
-Publish the resulting `dist/` files to the root of the public live repository. Do not copy the private source history into the public repository.
+This public duplicate is deployed automatically with GitHub Actions. Every push to `main` installs the dependencies, builds the optimized site, and publishes the `dist/` folder to GitHub Pages.
 
 ## Project structure
 
