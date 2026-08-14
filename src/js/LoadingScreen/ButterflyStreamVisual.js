@@ -6,10 +6,12 @@ import { clone as cloneSkeleton } from "three/examples/jsm/utils/SkeletonUtils.j
 export const BUTTERFLY_FLIGHT_INTERVAL = 5;
 export const BUTTERFLY_FIRST_FLIGHT_DELAY = 5;
 export const BUTTERFLY_FLIGHT_DURATION = 3.35;
+export const BUTTERFLY_ARRIVAL_GLOW_DURATION = 0.6;
 export const BUTTERFLY_FLIGHT_SIZE_RATIO = 0.095;
 export const BUTTERFLY_AMBIENT_HOVER_RATIO = 0.008;
 export const BUTTERFLY_AMBIENT_DRIFT_RATIO = 0.004;
-export const BUTTERFLY_MOBILE_LAYOUT_WIDTH = 0.56;
+export const BUTTERFLY_MOBILE_LAYOUT_WIDTH = 0.82;
+export const BUTTERFLY_ARRIVAL_GLOW_OPACITY = 0.68;
 
 const ASSET_URLS = [
     "./js/LoadingScreen/assets/pinkbtf.glb",
@@ -19,17 +21,17 @@ const AMBIENT_LAYOUT = [
     {
         sourceIndex: 0,
         sizeRatio: 0.034,
-        x: -0.58,
+        x: -0.4,
         y: 0.29,
         z: 0.72,
         phase: 0.25,
         speed: 0.82,
-        clip: "butteridle"
+        clip: "butterflap"
     },
     {
         sourceIndex: 1,
         sizeRatio: 0.046,
-        x: 0.6,
+        x: 0.42,
         y: 0.2,
         z: 0.78,
         phase: 1.7,
@@ -39,17 +41,17 @@ const AMBIENT_LAYOUT = [
     {
         sourceIndex: 1,
         sizeRatio: 0.039,
-        x: -0.6,
+        x: -0.43,
         y: 0.04,
         z: 0.82,
         phase: 3.1,
         speed: 0.76,
-        clip: "butteridle"
+        clip: "butterflap"
     },
     {
         sourceIndex: 0,
         sizeRatio: 0.052,
-        x: 0.57,
+        x: 0.4,
         y: -0.13,
         z: 0.76,
         phase: 4.5,
@@ -72,7 +74,7 @@ export class ButterflyStreamVisual {
         this.sources = [];
         this.ambientButterflies = [];
         this.flightButterflies = [];
-        this.activeFlight = null;
+        this.arrivalGlowTexture = null;
         this.lastFlightCycle = -1;
         this.timelineStart = null;
         this.hostSize = new THREE.Vector3();
@@ -80,9 +82,6 @@ export class ButterflyStreamVisual {
         this.targetPosition = new THREE.Vector3();
         this.controlA = new THREE.Vector3();
         this.controlB = new THREE.Vector3();
-        this.pathPosition = new THREE.Vector3();
-        this.nextPathPosition = new THREE.Vector3();
-        this.pathTangent = new THREE.Vector3();
         this.cameraRight = new THREE.Vector3();
         this.cameraUp = new THREE.Vector3();
         this.towardCamera = new THREE.Vector3();
@@ -130,7 +129,7 @@ export class ButterflyStreamVisual {
             const source = this.sources[layout.sourceIndex];
             const butterfly = createButterfly(
                 source,
-                [layout.clip, "butteridle", "butterflap"],
+                [layout.clip, "butterflap", "butteridle"],
                 `Small surrounding butterfly ${index + 1}`
             );
             const scale = this.hostSize.y * layout.sizeRatio / source.span;
@@ -142,8 +141,10 @@ export class ButterflyStreamVisual {
             );
             butterfly.wrapper.scale.setScalar(scale);
             butterfly.basePosition = butterfly.wrapper.position.clone();
-            butterfly.baseRotationZ = (index % 2 === 0 ? -1 : 1) *
-                THREE.MathUtils.degToRad(8 + index * 3);
+            const inwardTilt = THREE.MathUtils.degToRad(8 + index * 3);
+            butterfly.baseRotationZ = layout.x < 0
+                ? Math.PI - inwardTilt
+                : inwardTilt;
             butterfly.wrapper.rotation.z = butterfly.baseRotationZ;
             butterfly.phase = layout.phase;
             butterfly.motionSpeed = layout.speed;
@@ -153,20 +154,29 @@ export class ButterflyStreamVisual {
             this.ambientButterflies.push(butterfly);
         });
 
+        this.arrivalGlowTexture = createArrivalGlowTexture();
         this.sources.forEach((source, index) => {
             const butterfly = createButterfly(
                 source,
-                ["buttersoar", "butterflap", "butteridle"],
+                ["butterflap", "buttersoar", "butteridle"],
                 `${source.label} transfer butterfly`
             );
             const hostWorldHeight = this.hostSize.y *
                 this.hostVisual.object3D.scale.y;
 
             butterfly.baseScale = hostWorldHeight *
-                BUTTERFLY_FLIGHT_SIZE_RATIO / source.span;
+                BUTTERFLY_FLIGHT_SIZE_RATIO *
+                (index === 0 ? 1 : 0.88) / source.span;
             butterfly.wrapper.visible = false;
-            butterfly.mixer.timeScale = 1.16;
-            this.group.add(butterfly.wrapper);
+            butterfly.mixer.timeScale = index === 0 ? 1.22 : 1.12;
+            butterfly.pathPosition = new THREE.Vector3();
+            butterfly.nextPathPosition = new THREE.Vector3();
+            butterfly.pathTangent = new THREE.Vector3();
+            butterfly.glow = createArrivalGlow(
+                this.arrivalGlowTexture,
+                index === 0 ? 0xff9de8 : 0xba8cff
+            );
+            this.group.add(butterfly.wrapper, butterfly.glow);
             this.flightButterflies[index] = butterfly;
         });
 
@@ -228,19 +238,11 @@ export class ButterflyStreamVisual {
 
         if (cycle !== this.lastFlightCycle) this.beginFlight(cycle);
 
-        if (!this.activeFlight || cycleTime > BUTTERFLY_FLIGHT_DURATION) {
-            if (this.activeFlight) this.activeFlight.wrapper.visible = false;
+        if (cycleTime > BUTTERFLY_FLIGHT_DURATION +
+            BUTTERFLY_ARRIVAL_GLOW_DURATION) {
+            this.hideFlightButterflies();
             return;
         }
-
-        this.activeFlight.wrapper.visible = true;
-        this.activeFlight.mixer.update(deltaTime);
-
-        const progress = THREE.MathUtils.clamp(
-            cycleTime / BUTTERFLY_FLIGHT_DURATION,
-            0,
-            1
-        );
 
         this.hostVisual.getButterflyLaunchWorldPosition(this.launchPosition);
         this.privacyBoxVisual.getButterflyArrivalWorldPosition(
@@ -264,59 +266,137 @@ export class ButterflyStreamVisual {
             .addScaledVector(this.cameraRight, -hostWorldHeight * 0.1)
             .addScaledVector(this.cameraUp, -hostWorldHeight * 0.07);
 
+        if (cycleTime > BUTTERFLY_FLIGHT_DURATION) {
+            const glowProgress = (cycleTime - BUTTERFLY_FLIGHT_DURATION) /
+                BUTTERFLY_ARRIVAL_GLOW_DURATION;
+
+            this.flightButterflies.forEach((butterfly) => {
+                butterfly.wrapper.visible = false;
+                butterfly.glow.visible = true;
+                butterfly.glow.position.copy(this.targetPosition);
+                butterfly.glow.scale.setScalar(
+                    hostWorldHeight * THREE.MathUtils.lerp(
+                        0.08,
+                        0.16,
+                        glowProgress
+                    )
+                );
+                butterfly.glow.material.opacity =
+                    BUTTERFLY_ARRIVAL_GLOW_OPACITY * (1 - glowProgress);
+            });
+            return;
+        }
+
+        const progress = THREE.MathUtils.clamp(
+            cycleTime / BUTTERFLY_FLIGHT_DURATION,
+            0,
+            1
+        );
+
+        this.flightButterflies.forEach((butterfly, index) => {
+            butterfly.wrapper.visible = true;
+            butterfly.mixer.update(deltaTime);
+            this.evaluateFlightPath(
+                progress,
+                index,
+                elapsedTime,
+                hostWorldHeight,
+                butterfly.pathPosition
+            );
+            this.evaluateFlightPath(
+                Math.min(progress + 0.012, 1),
+                index,
+                elapsedTime + 0.012 * BUTTERFLY_FLIGHT_DURATION,
+                hostWorldHeight,
+                butterfly.nextPathPosition
+            );
+            butterfly.pathTangent.subVectors(
+                butterfly.nextPathPosition,
+                butterfly.pathPosition
+            ).normalize();
+
+            const screenAngle = Math.atan2(
+                butterfly.pathTangent.dot(this.cameraUp),
+                butterfly.pathTangent.dot(this.cameraRight)
+            );
+            const emerge = THREE.MathUtils.smoothstep(progress, 0, 0.14);
+            const enter = 1 - THREE.MathUtils.smoothstep(progress, 0.82, 1);
+            const size = butterfly.baseScale *
+                THREE.MathUtils.lerp(0.3, 1, emerge) *
+                THREE.MathUtils.lerp(0.08, 1, enter) *
+                (1 + Math.sin(elapsedTime * 7 + index) * 0.035);
+            const arrivalStrength = THREE.MathUtils.smoothstep(
+                progress,
+                0.64,
+                1
+            );
+
+            butterfly.wrapper.position.copy(butterfly.pathPosition);
+            butterfly.wrapper.quaternion.copy(this.camera.quaternion);
+            butterfly.wrapper.rotateZ(screenAngle - Math.PI);
+            butterfly.wrapper.rotateY(
+                Math.sin(elapsedTime * 3.2 + index * Math.PI) *
+                THREE.MathUtils.degToRad(7)
+            );
+            butterfly.wrapper.scale.setScalar(size);
+
+            butterfly.glow.visible = arrivalStrength > 0.01;
+            butterfly.glow.position.copy(butterfly.pathPosition);
+            butterfly.glow.scale.setScalar(
+                hostWorldHeight * THREE.MathUtils.lerp(
+                    0.035,
+                    0.09,
+                    arrivalStrength
+                )
+            );
+            butterfly.glow.material.opacity = arrivalStrength *
+                BUTTERFLY_ARRIVAL_GLOW_OPACITY;
+        });
+    }
+
+    evaluateFlightPath(progress, index, elapsedTime, hostHeight, target) {
         cubicBezier(
             this.launchPosition,
             this.controlA,
             this.controlB,
             this.targetPosition,
             easeInOut(progress),
-            this.pathPosition
+            target
         );
-        cubicBezier(
-            this.launchPosition,
-            this.controlA,
-            this.controlB,
-            this.targetPosition,
-            Math.min(easeInOut(progress) + 0.012, 1),
-            this.nextPathPosition
-        );
-        this.pathTangent.subVectors(
-            this.nextPathPosition,
-            this.pathPosition
-        ).normalize();
 
-        const screenAngle = Math.atan2(
-            this.pathTangent.dot(this.cameraUp),
-            this.pathTangent.dot(this.cameraRight)
-        );
-        const emerge = THREE.MathUtils.smoothstep(progress, 0, 0.14);
-        const enter = 1 - THREE.MathUtils.smoothstep(progress, 0.82, 1);
-        const size = this.activeFlight.baseScale *
-            THREE.MathUtils.lerp(0.3, 1, emerge) *
-            THREE.MathUtils.lerp(0.08, 1, enter) *
-            (1 + Math.sin(elapsedTime * 7) * 0.035);
+        const pathEnvelope = Math.sin(progress * Math.PI);
+        const switchingWave = Math.sin(
+            progress * Math.PI * 3 + index * Math.PI
+        ) * pathEnvelope;
+        const hoverWave = Math.sin(
+            elapsedTime * 5.2 + progress * 8 + index * Math.PI
+        ) * pathEnvelope;
 
-        this.activeFlight.wrapper.position.copy(this.pathPosition);
-        this.activeFlight.wrapper.quaternion.copy(this.camera.quaternion);
-        this.activeFlight.wrapper.rotateZ(screenAngle - Math.PI * 0.5);
-        this.activeFlight.wrapper.rotateY(
-            Math.sin(elapsedTime * 3.2) * THREE.MathUtils.degToRad(7)
+        target.addScaledVector(
+            this.cameraRight,
+            switchingWave * hostHeight * 0.022
         );
-        this.activeFlight.wrapper.scale.setScalar(size);
+        target.addScaledVector(
+            this.cameraUp,
+            switchingWave * hostHeight * 0.032 +
+                hoverWave * hostHeight * 0.012
+        );
     }
 
     beginFlight(cycle) {
         this.hideFlightButterflies();
         this.lastFlightCycle = cycle;
-        this.activeFlight = this.flightButterflies[cycle %
-            this.flightButterflies.length];
-        this.activeFlight.wrapper.visible = true;
-        this.activeFlight.action.reset().play();
+        this.flightButterflies.forEach((butterfly) => {
+            butterfly.wrapper.visible = true;
+            butterfly.action.reset().play();
+        });
     }
 
     hideFlightButterflies() {
         this.flightButterflies.forEach((butterfly) => {
             butterfly.wrapper.visible = false;
+            butterfly.glow.visible = false;
+            butterfly.glow.material.opacity = 0;
         });
     }
 
@@ -330,15 +410,20 @@ export class ButterflyStreamVisual {
                 butterfly.mixer.stopAllAction();
                 butterfly.wrapper.removeFromParent();
                 butterfly.wrapper.clear();
+                if (butterfly.glow) {
+                    butterfly.glow.removeFromParent();
+                    butterfly.glow.material.dispose();
+                }
             }
         );
+        this.arrivalGlowTexture?.dispose();
         this.sources.forEach((source) => disposeObject3D(source.scene));
         this.group.removeFromParent();
         this.group.clear();
         this.sources.length = 0;
         this.ambientButterflies.length = 0;
         this.flightButterflies.length = 0;
-        this.activeFlight = null;
+        this.arrivalGlowTexture = null;
         this.initialized = false;
     }
 }
@@ -410,6 +495,55 @@ function cubicBezier(point0, point1, point2, point3, t, target) {
 
 function easeInOut(value) {
     return value * value * (3 - 2 * value);
+}
+
+function createArrivalGlowTexture() {
+    const canvas = document.createElement("canvas");
+    const size = 128;
+    const center = size * 0.5;
+
+    canvas.width = size;
+    canvas.height = size;
+
+    const context = canvas.getContext("2d");
+    const gradient = context.createRadialGradient(
+        center,
+        center,
+        0,
+        center,
+        center,
+        center
+    );
+
+    gradient.addColorStop(0, "rgba(255, 255, 255, 1)");
+    gradient.addColorStop(0.2, "rgba(255, 246, 255, 0.88)");
+    gradient.addColorStop(0.58, "rgba(226, 151, 255, 0.32)");
+    gradient.addColorStop(1, "rgba(173, 72, 255, 0)");
+    context.fillStyle = gradient;
+    context.fillRect(0, 0, size, size);
+
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.colorSpace = THREE.SRGBColorSpace;
+    return texture;
+}
+
+function createArrivalGlow(texture, color) {
+    const material = new THREE.SpriteMaterial({
+        map: texture,
+        color,
+        transparent: true,
+        opacity: 0,
+        depthTest: false,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+        toneMapped: false
+    });
+    const glow = new THREE.Sprite(material);
+
+    glow.name = "Butterfly privacy-box arrival glow";
+    glow.visible = false;
+    glow.renderOrder = 10;
+    return glow;
 }
 
 function disposeObject3D(object) {

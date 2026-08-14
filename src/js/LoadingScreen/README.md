@@ -43,11 +43,11 @@ privacy-detail butterflies that will be added in the next iteration.
 
 `ButterflyStreamVisual.js` loads the authored pink and purple butterfly GLBs
 once, then reuses their geometry, textures, and built-in animation clips. Four
-small, differently sized butterflies hover around the woman. At five-second
-intervals, a larger alternating pink/purple butterfly emerges from behind the
-woman, follows a curved flight path, shrinks into the safe-box arrival anchor,
-and disappears. The safe box remains camera-anchored and does not inherit the
-woman's rotation.
+small, differently sized butterflies flap and hover close to the woman while
+facing inward. At five-second intervals, a larger pink-and-purple pair emerges
+from behind the woman. They weave past one another, flap toward the box, shrink
+into its arrival anchor, and leave a short colored glow as they disappear. The
+safe box remains camera-anchored and does not inherit the woman's rotation.
 
 The build copies everything in `assets/` to the same stable path under `dist`.
 This avoids bundler-specific GLB URL rewriting and is the convention for future
