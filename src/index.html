@@ -5,29 +5,77 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="theme-color" content="#06040b">
-    <title>AURA</title>
+    <title>AURA Privacy Import</title>
     <link rel="stylesheet" href="./css/style.css">
 </head>
 
 <body>
-    <main id="loadingScreen" aria-live="polite">
-        <div id="viewport" aria-hidden="true"></div>
-
-        <header class="brand">
-            <span class="brand-name">AURA</span>
-            <span class="brand-subtitle">Silhouette Experience</span>
-        </header>
-
-        <section class="loading-copy">
-            <p class="eyebrow">Private by design</p>
-            <h1>Preparing your experience</h1>
-            <p id="loadingStatus">Loading visual scene</p>
-
-            <div class="progress-track" aria-hidden="true">
-                <span class="progress-glow"></span>
+    <div id="app">
+        <aside id="sidebar" aria-label="Model import controls">
+            <div class="sidebar-logo">
+                <span class="sidebar-logo-name">AURA</span>
+                <span class="sidebar-logo-subtitle">Private Model Import</span>
             </div>
-        </section>
-    </main>
+
+            <section class="sidebar-card model-card">
+                <h2>Imported Model</h2>
+                <div id="modelList" class="model-list">
+                    <p class="model-list-empty">No model imported</p>
+                </div>
+            </section>
+
+            <section class="sidebar-card import-card">
+                <h2>Import Model</h2>
+                <button id="uploadBtn" type="button">
+                    <span class="button-icon" aria-hidden="true">+</span>
+                    <span>Upload 3D Model</span>
+                </button>
+                <input
+                    id="fileInput"
+                    type="file"
+                    accept=".glb,.gltf,.obj,.fbx"
+                    hidden>
+                <p class="format-help">GLB, GLTF, OBJ or FBX</p>
+            </section>
+
+            <section class="sidebar-card privacy-card">
+                <h2>Privacy Status</h2>
+                <p id="status" aria-live="polite">Waiting for a model.</p>
+                <p class="privacy-note">
+                    Your model remains on this device. It is not displayed,
+                    modified or analyzed.
+                </p>
+            </section>
+        </aside>
+
+        <main id="loadingScreen">
+            <div id="viewport" aria-hidden="true"></div>
+
+            <section id="emptyState" class="empty-state">
+                <span class="empty-state-orbit" aria-hidden="true"></span>
+                <p class="eyebrow">Private by design</p>
+                <h1>Import a model to begin</h1>
+                <p>Your upload will activate the AURA privacy experience.</p>
+            </section>
+
+            <div id="loadingInterface" hidden>
+                <header class="brand">
+                    <span class="brand-name">AURA</span>
+                    <span class="brand-subtitle">Silhouette Experience</span>
+                </header>
+
+                <section class="loading-copy">
+                    <p class="eyebrow">Private by design</p>
+                    <h1>Preparing your experience</h1>
+                    <p id="loadingStatus">Importing your model securely</p>
+
+                    <div class="progress-track" aria-hidden="true">
+                        <span class="progress-glow"></span>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
 
     <script type="module" src="./js/scripts.js"></script>
 </body>

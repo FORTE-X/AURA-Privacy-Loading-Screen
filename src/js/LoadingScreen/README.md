@@ -10,6 +10,13 @@ Future GLB models should be placed in an `assets` folder here and integrated
 through a dedicated module in this folder. Register each model with
 `addModel(model, { update })` so its animation and disposal remain contained.
 
+The screen is started by `ModelUpload/ModelUploadController.js`. That controller
+validates a local GLB, GLTF, OBJ, or FBX file and records only its filename,
+format, size, and import time. The uploaded model is deliberately not displayed,
+modified, analyzed, or retained; a successful local import simply triggers this
+authored privacy-loading experience. Removing or replacing the imported entry
+disposes the current loading scene before another one can begin.
+
 ## Current visual
 
 `Test3LoadingVisual.js` loads `assets/test3main2.glb` with its embedded figure
