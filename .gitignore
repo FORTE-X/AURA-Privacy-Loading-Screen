@@ -6,6 +6,7 @@ node_modules/
 dist/
 build-*/
 .pages-deploy-temp/
+pages-deploy-temp/
 
 # Local configuration and secrets
 .env
