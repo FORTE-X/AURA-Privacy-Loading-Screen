@@ -60,6 +60,11 @@ export class Test3LoadingVisual {
         this.particleField = null;
         this.bottomLight = null;
         this.bottomGlow = null;
+        this.contentSize = new THREE.Vector3();
+        this.butterflyLayer = new THREE.Group();
+        this.butterflyLayer.name = "Butterflies surrounding the woman";
+        this.butterflyLaunchAnchor = new THREE.Object3D();
+        this.butterflyLaunchAnchor.name = "Butterfly launch point behind woman";
         this.disposed = false;
     }
 
@@ -69,6 +74,18 @@ export class Test3LoadingVisual {
 
     scatterParticles() {
         scatterParticleField(this.particleField);
+    }
+
+    getButterflyLayoutSize(target = new THREE.Vector3()) {
+        return target.copy(this.contentSize);
+    }
+
+    getButterflyLayer() {
+        return this.butterflyLayer;
+    }
+
+    getButterflyLaunchWorldPosition(target = new THREE.Vector3()) {
+        return this.butterflyLaunchAnchor.getWorldPosition(target);
     }
 
     async initialize() {
@@ -140,6 +157,12 @@ export class Test3LoadingVisual {
 
         model.name = "test3main2.glb Textured Model and Flowers";
         model.position.copy(center).multiplyScalar(-1);
+        this.contentSize.copy(size);
+        this.butterflyLaunchAnchor.position.set(
+            -size.x * 0.08,
+            size.y * 0.14,
+            -size.z * 0.58
+        );
 
         this.particleField = createParticleField(size);
 
@@ -162,7 +185,9 @@ export class Test3LoadingVisual {
             model,
             this.particleField.points,
             this.bottomLight,
-            this.bottomGlow
+            this.bottomGlow,
+            this.butterflyLayer,
+            this.butterflyLaunchAnchor
         );
 
         return true;
@@ -238,6 +263,7 @@ export class Test3LoadingVisual {
         this.particleField = null;
         this.bottomLight = null;
         this.bottomGlow = null;
+        this.contentSize.set(0, 0, 0);
     }
 }
 

@@ -1,3 +1,4 @@
+import { ButterflyStreamVisual } from "./LoadingScreen/ButterflyStreamVisual.js";
 import { LoadingScreenStage } from "./LoadingScreen/LoadingScreenStage.js";
 import { PrivacyBoxVisual } from "./LoadingScreen/PrivacyBoxVisual.js";
 import { Test3LoadingVisual } from "./LoadingScreen/Test3LoadingVisual.js";
@@ -14,6 +15,11 @@ const loadingScreen = new LoadingScreenStage(scene, camera);
 const loadingStatus = document.getElementById("loadingStatus");
 const test3Visual = new Test3LoadingVisual(camera);
 const privacyBoxVisual = new PrivacyBoxVisual(camera);
+const butterflyVisual = new ButterflyStreamVisual(
+    camera,
+    test3Visual,
+    privacyBoxVisual
+);
 const handleModelInteraction = () => test3Visual.scatterParticles();
 let pageDisposed = false;
 
@@ -45,9 +51,32 @@ async function initializeLoadingVisuals() {
         return;
     }
 
-    loadingStatus.textContent = boxReady
+    if (!boxReady) {
+        loadingStatus.textContent = "Visual scene ready — safe box unavailable";
+        return;
+    }
+
+    const butterflyResult = await settle(butterflyVisual.initialize());
+
+    if (pageDisposed) return;
+
+    const butterfliesReady = addInitializedVisual(
+        butterflyResult,
+        butterflyVisual,
+        "butterfly stream"
+    );
+
+    loadingStatus.textContent = butterfliesReady
         ? "Visual scene ready"
-        : "Visual scene ready — safe box unavailable";
+        : "Visual scene ready — butterflies unavailable";
+}
+
+async function settle(promise) {
+    try {
+        return { status: "fulfilled", value: await promise };
+    } catch (reason) {
+        return { status: "rejected", reason };
+    }
 }
 
 function addInitializedVisual(result, visual, label) {
@@ -89,6 +118,7 @@ requestAnimationFrame(animate);
 window.addEventListener("pagehide", () => {
     pageDisposed = true;
     controls.removeEventListener("start", handleModelInteraction);
+    butterflyVisual.dispose();
     test3Visual.dispose();
     privacyBoxVisual.dispose();
     loadingScreen.dispose();

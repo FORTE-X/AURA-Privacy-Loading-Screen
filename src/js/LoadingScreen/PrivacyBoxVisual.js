@@ -11,10 +11,9 @@ export const PRIVACY_BOX_SCREEN_HEIGHT_MOBILE = 0.105;
 export const PRIVACY_BOX_CAMERA_DISTANCE = 4.2;
 export const PRIVACY_BOX_HOVER_AMPLITUDE = 0.008;
 export const PRIVACY_BOX_HOVER_SPEED = 1.05;
-export const PRIVACY_BOX_SWAY_AMPLITUDE = 0.025;
 export const PRIVACY_BOX_BREATH_SPEED = 0.82;
-export const PRIVACY_BOX_GLOW_MIN = 0.76;
-export const PRIVACY_BOX_GLOW_MAX = 1.34;
+export const PRIVACY_BOX_GLOW_MIN = 0.88;
+export const PRIVACY_BOX_GLOW_MAX = 1.52;
 
 const BOX_URL = "./js/LoadingScreen/assets/boxmain.glb";
 const gltfLoader = new GLTFLoader();
@@ -37,8 +36,6 @@ export class PrivacyBoxVisual {
         this.screenPoint = new THREE.Vector3();
         this.viewDirection = new THREE.Vector3();
         this.hoverOffset = new THREE.Vector3();
-        this.swayRotation = new THREE.Quaternion();
-        this.swayEuler = new THREE.Euler();
     }
 
     get object3D() {
@@ -116,7 +113,6 @@ export class PrivacyBoxVisual {
             THREE.MathUtils.degToRad(this.camera.fov) * 0.5
         ) * PRIVACY_BOX_CAMERA_DISTANCE;
         const hoverWave = Math.sin(elapsedTime * PRIVACY_BOX_HOVER_SPEED);
-        const swayWave = Math.sin(elapsedTime * PRIVACY_BOX_HOVER_SPEED * 0.61);
         const breathWave = 0.5 + 0.5 * Math.sin(
             elapsedTime * PRIVACY_BOX_BREATH_SPEED - Math.PI * 0.5
         );
@@ -152,14 +148,7 @@ export class PrivacyBoxVisual {
         ).applyQuaternion(this.camera.quaternion);
         this.group.position.add(this.hoverOffset);
 
-        this.swayEuler.set(
-            swayWave * PRIVACY_BOX_SWAY_AMPLITUDE * 0.35,
-            swayWave * PRIVACY_BOX_SWAY_AMPLITUDE,
-            -swayWave * PRIVACY_BOX_SWAY_AMPLITUDE * 0.5
-        );
-        this.swayRotation.setFromEuler(this.swayEuler);
-        this.group.quaternion.copy(this.camera.quaternion)
-            .multiply(this.swayRotation);
+        this.group.quaternion.copy(this.camera.quaternion);
 
         const scale = visibleCameraHeight * screenHeight / this.visibleHeight;
         this.group.scale.setScalar(scale);
