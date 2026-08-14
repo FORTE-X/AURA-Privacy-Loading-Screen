@@ -81,14 +81,16 @@ if (composer) {
 }
 
 export function renderScene() {
-    controls.update();
-
     if (composer) {
         composer.render();
         return;
     }
 
     renderer.render(scene, camera);
+}
+
+export function updateSceneControls() {
+    controls.update();
 }
 
 export function disposeSceneControls() {

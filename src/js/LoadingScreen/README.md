@@ -34,6 +34,13 @@ Starting any mouse or touch orbit scatters the field outward again. Its bounded
 volume then contracts over five seconds—twice the configured 2.5-second base
 return duration—while Brownian motion continues.
 
+`PrivacyBoxVisual.js` loads `assets/boxmain.glb` with its embedded base-color,
+opacity, roughness, and emissive textures intact. It remains screen-anchored in
+the upper-right while the central artwork is orbited, with a gentle hover, a
+small sway, and a slow breath applied through the authored emissive material.
+Its invisible `butterflyArrivalAnchor` is the destination hook for the incoming
+privacy-detail butterflies that will be added in the next iteration.
+
 The build copies everything in `assets/` to the same stable path under `dist`.
 This avoids bundler-specific GLB URL rewriting and is the convention for future
 authored loading-screen models.
