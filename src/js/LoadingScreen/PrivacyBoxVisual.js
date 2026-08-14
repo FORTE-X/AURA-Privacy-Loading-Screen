@@ -14,6 +14,9 @@ export const PRIVACY_BOX_HOVER_SPEED = 1.05;
 export const PRIVACY_BOX_BREATH_SPEED = 0.82;
 export const PRIVACY_BOX_GLOW_MIN = 0.88;
 export const PRIVACY_BOX_GLOW_MAX = 1.52;
+export const PRIVACY_BOX_CONTACT_PULSE_DURATION = 0.48;
+export const PRIVACY_BOX_CONTACT_PULSE_STRENGTH = 0.82;
+export const PRIVACY_BOX_CONTACT_PULSE_SCALE = 0.055;
 
 const BOX_URL = "./js/LoadingScreen/assets/boxmain.glb";
 const gltfLoader = new GLTFLoader();
@@ -36,6 +39,7 @@ export class PrivacyBoxVisual {
         this.screenPoint = new THREE.Vector3();
         this.viewDirection = new THREE.Vector3();
         this.hoverOffset = new THREE.Vector3();
+        this.contactPulseRemaining = 0;
     }
 
     get object3D() {
@@ -48,6 +52,10 @@ export class PrivacyBoxVisual {
 
     getButterflyArrivalWorldPosition(target = new THREE.Vector3()) {
         return this.arrivalAnchor.getWorldPosition(target);
+    }
+
+    pulseOnButterflyContact() {
+        this.contactPulseRemaining = PRIVACY_BOX_CONTACT_PULSE_DURATION;
     }
 
     async initialize() {
@@ -102,7 +110,7 @@ export class PrivacyBoxVisual {
         return true;
     }
 
-    update(_deltaTime, elapsedTime) {
+    update(deltaTime, elapsedTime) {
         if (this.disposed || !this.loaded) return;
 
         const isMobile = this.mobileViewport.matches;
@@ -121,6 +129,14 @@ export class PrivacyBoxVisual {
             PRIVACY_BOX_GLOW_MAX,
             breathWave
         );
+        const pulseProgress = this.contactPulseRemaining > 0
+            ? 1 - this.contactPulseRemaining /
+                PRIVACY_BOX_CONTACT_PULSE_DURATION
+            : 1;
+        const pulseWave = this.contactPulseRemaining > 0
+            ? Math.exp(-pulseProgress * 3.2) *
+                (0.78 + 0.22 * Math.cos(pulseProgress * Math.PI * 2))
+            : 0;
 
         this.anchorNdc.set(
             isMobile
@@ -151,12 +167,19 @@ export class PrivacyBoxVisual {
         this.group.quaternion.copy(this.camera.quaternion);
 
         const scale = visibleCameraHeight * screenHeight / this.visibleHeight;
-        this.group.scale.setScalar(scale);
+        this.group.scale.setScalar(
+            scale * (1 + pulseWave * PRIVACY_BOX_CONTACT_PULSE_SCALE)
+        );
 
         this.emissiveMaterials.forEach((entry) => {
             entry.material.emissiveIntensity = entry.authoredIntensity *
-                glowMultiplier;
+                glowMultiplier *
+                (1 + pulseWave * PRIVACY_BOX_CONTACT_PULSE_STRENGTH);
         });
+        this.contactPulseRemaining = Math.max(
+            0,
+            this.contactPulseRemaining - deltaTime
+        );
     }
 
     dispose() {
@@ -167,6 +190,7 @@ export class PrivacyBoxVisual {
         disposeObject3D(this.group);
         this.group.clear();
         this.emissiveMaterials.length = 0;
+        this.contactPulseRemaining = 0;
         this.loaded = false;
     }
 }

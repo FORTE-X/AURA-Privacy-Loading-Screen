@@ -76,6 +76,7 @@ export class ButterflyStreamVisual {
         this.flightButterflies = [];
         this.arrivalGlowTexture = null;
         this.lastFlightCycle = -1;
+        this.lastContactCycle = -1;
         this.timelineStart = null;
         this.hostSize = new THREE.Vector3();
         this.launchPosition = new THREE.Vector3();
@@ -237,6 +238,12 @@ export class ButterflyStreamVisual {
         const cycleTime = repeatingTime - cycle * BUTTERFLY_FLIGHT_INTERVAL;
 
         if (cycle !== this.lastFlightCycle) this.beginFlight(cycle);
+
+        if (cycleTime >= BUTTERFLY_FLIGHT_DURATION &&
+            cycle !== this.lastContactCycle) {
+            this.lastContactCycle = cycle;
+            this.privacyBoxVisual.pulseOnButterflyContact();
+        }
 
         if (cycleTime > BUTTERFLY_FLIGHT_DURATION +
             BUTTERFLY_ARRIVAL_GLOW_DURATION) {
@@ -424,6 +431,7 @@ export class ButterflyStreamVisual {
         this.ambientButterflies.length = 0;
         this.flightButterflies.length = 0;
         this.arrivalGlowTexture = null;
+        this.lastContactCycle = -1;
         this.initialized = false;
     }
 }
