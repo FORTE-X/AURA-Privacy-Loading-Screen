@@ -41,7 +41,7 @@ export const BOTTOM_LIGHT_DISTANCE = 2.2;
 export const BOTTOM_GLOW_MAX_OPACITY = 0.39;
 
 const gltfLoader = new GLTFLoader();
-const MODEL_URL = "./js/LoadingScreen/assets/test3main2.glb";
+const MODEL_URL = new URL("./assets/test3main2.glb", import.meta.url).href;
 const FLOWER_TINTS = [
     new THREE.Color(0xffd2f4),
     new THREE.Color(0xd8adff),

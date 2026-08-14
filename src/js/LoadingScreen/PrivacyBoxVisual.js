@@ -16,7 +16,7 @@ export const PRIVACY_BOX_GLOW_MIN = 1.04;
 export const PRIVACY_BOX_GLOW_MAX = 1.74;
 export const PRIVACY_BOX_PROXIMITY_GLOW_STRENGTH = 1.15;
 
-const BOX_URL = "./js/LoadingScreen/assets/boxmain.glb";
+const BOX_URL = new URL("./assets/boxmain.glb", import.meta.url).href;
 const gltfLoader = new GLTFLoader();
 
 /** A camera-anchored safe box ready to receive the future butterfly stream. */

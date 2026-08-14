@@ -14,8 +14,8 @@ export const BUTTERFLY_MOBILE_LAYOUT_WIDTH = 0.82;
 export const BUTTERFLY_ARRIVAL_GLOW_OPACITY = 0.68;
 
 const ASSET_URLS = [
-    "./js/LoadingScreen/assets/pinkbtf.glb",
-    "./js/LoadingScreen/assets/purplebtf.glb"
+    new URL("./assets/pinkbtf.glb", import.meta.url).href,
+    new URL("./assets/purplebtf.glb", import.meta.url).href
 ];
 const AMBIENT_LAYOUT = [
     {
