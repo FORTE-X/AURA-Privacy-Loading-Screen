@@ -4,7 +4,7 @@
   "description": "Responsive Three.js privacy-loading experience for local model imports.",
   "scripts": {
     "dev": "parcel src/index.html",
-    "build": "node scripts/clean-build.mjs && parcel build src/index.html --dist-dir dist --public-url ./ --no-source-maps && node scripts/copy-loading-assets.mjs"
+    "build": "node scripts/clean-build.mjs && parcel build src/index.html --dist-dir dist --public-url ./ --no-source-maps"
   },
   "keywords": [],
   "author": "",
