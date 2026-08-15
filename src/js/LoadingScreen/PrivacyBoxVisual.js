@@ -12,8 +12,8 @@ export const PRIVACY_BOX_CAMERA_DISTANCE = 4.2;
 export const PRIVACY_BOX_HOVER_AMPLITUDE = 0.008;
 export const PRIVACY_BOX_HOVER_SPEED = 1.05;
 export const PRIVACY_BOX_BREATH_SPEED = 0.82;
-export const PRIVACY_BOX_GLOW_MIN = 0.62;
-export const PRIVACY_BOX_GLOW_MAX = 1.04;
+export const PRIVACY_BOX_GLOW_MIN = 0.248;
+export const PRIVACY_BOX_GLOW_MAX = 0.416;
 export const PRIVACY_BOX_PROXIMITY_GLOW_STRENGTH = 0.7;
 
 const BOX_URL = new URL("./assets/boxmain.glb", import.meta.url).href;
