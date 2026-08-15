@@ -11,7 +11,7 @@ export const PRIVACY_BOX_SCREEN_HEIGHT_MOBILE = 0.17;
 export const PRIVACY_BOX_CAMERA_DISTANCE = 4.2;
 export const PRIVACY_BOX_HOVER_AMPLITUDE = 0.008;
 export const PRIVACY_BOX_HOVER_SPEED = 1.05;
-export const PRIVACY_BOX_NON_GLOW_EMISSIVE_INTENSITY = 0.3;
+export const PRIVACY_BOX_NON_GLOW_EMISSIVE_INTENSITY = 0.45;
 
 const BOX_URL = new URL("./assets/boxmain.glb", import.meta.url).href;
 const gltfLoader = new GLTFLoader();
