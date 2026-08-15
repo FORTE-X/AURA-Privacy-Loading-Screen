@@ -4,6 +4,8 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
 export const MODEL_VIEW_HEIGHT_RATIO = 0.68;
 export const MODEL_VERTICAL_POSITION = 0.75;
+export const MODEL_SCREEN_X_DESKTOP = -0.44;
+export const MODEL_SCREEN_X_MOBILE = -0.36;
 export const MODEL_FLOAT_AMPLITUDE = 0.045;
 export const MODEL_FLOAT_SPEED = 0.55;
 export const MODEL_TURN_AMPLITUDE = 0.045;
@@ -54,6 +56,7 @@ export class Test3LoadingVisual {
 
     constructor(camera) {
         this.camera = camera;
+        this.mobileViewport = window.matchMedia("(max-width: 760px)");
         this.group = new THREE.Group();
         this.group.name = "Test3 Authored Loading Visual";
         this.flowerAnimations = [];
@@ -180,6 +183,7 @@ export class Test3LoadingVisual {
         this.bottomGlow.scale.set(size.x * 1.14, size.y * 0.25, 1);
 
         this.group.scale.setScalar(scale);
+        this.group.position.x = this.getHorizontalPosition();
         this.group.position.y = MODEL_VERTICAL_POSITION;
         this.group.add(
             model,
@@ -210,6 +214,7 @@ export class Test3LoadingVisual {
 
         this.group.position.y = MODEL_VERTICAL_POSITION +
             floatWave * MODEL_FLOAT_AMPLITUDE;
+        this.group.position.x = this.getHorizontalPosition();
         this.group.rotation.y = turnWave * MODEL_TURN_AMPLITUDE;
         this.bottomLight.intensity = BOTTOM_LIGHT_MAX_INTENSITY *
             glowBrightness;
@@ -250,6 +255,18 @@ export class Test3LoadingVisual {
                     );
             });
         });
+    }
+
+    getHorizontalPosition() {
+        const cameraDistance = Math.abs(this.camera.position.z);
+        const visibleHeight = 2 * Math.tan(
+            THREE.MathUtils.degToRad(this.camera.fov) * 0.5
+        ) * cameraDistance;
+        const screenX = this.mobileViewport.matches
+            ? MODEL_SCREEN_X_MOBILE
+            : MODEL_SCREEN_X_DESKTOP;
+
+        return visibleHeight * this.camera.aspect * screenX * 0.5;
     }
 
     dispose() {

@@ -2,12 +2,12 @@ import * as THREE from "three";
 
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
-export const PRIVACY_BOX_SCREEN_X_DESKTOP = 0.72;
-export const PRIVACY_BOX_SCREEN_X_MOBILE = 0.72;
-export const PRIVACY_BOX_SCREEN_Y_DESKTOP = 0.08;
-export const PRIVACY_BOX_SCREEN_Y_MOBILE = 0.1;
-export const PRIVACY_BOX_SCREEN_HEIGHT_DESKTOP = 0.3;
-export const PRIVACY_BOX_SCREEN_HEIGHT_MOBILE = 0.21;
+export const PRIVACY_BOX_SCREEN_X_DESKTOP = 0.44;
+export const PRIVACY_BOX_SCREEN_X_MOBILE = 0.36;
+export const PRIVACY_BOX_SCREEN_Y_DESKTOP = -0.18;
+export const PRIVACY_BOX_SCREEN_Y_MOBILE = -0.14;
+export const PRIVACY_BOX_SCREEN_HEIGHT_DESKTOP = 0.22;
+export const PRIVACY_BOX_SCREEN_HEIGHT_MOBILE = 0.17;
 export const PRIVACY_BOX_CAMERA_DISTANCE = 4.2;
 export const PRIVACY_BOX_HOVER_AMPLITUDE = 0.008;
 export const PRIVACY_BOX_HOVER_SPEED = 1.05;
