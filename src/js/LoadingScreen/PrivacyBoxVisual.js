@@ -26,6 +26,7 @@ export class PrivacyBoxVisual {
         this.camera = camera;
         this.group = new THREE.Group();
         this.group.name = "Floating privacy safe box";
+        this.animationMixer = null;
         this.arrivalAnchor = new THREE.Object3D();
         this.arrivalAnchor.name = "Butterfly arrival anchor";
         this.emissiveMaterials = [];
@@ -102,14 +103,24 @@ export class PrivacyBoxVisual {
         this.visibleHeight = Math.max(size.y, Number.EPSILON);
         this.arrivalAnchor.position.set(0, size.y * 0.04, size.z * 0.58);
         this.group.add(model, this.arrivalAnchor);
+
+        if (gltf.animations.length > 0) {
+            this.animationMixer = new THREE.AnimationMixer(model);
+            gltf.animations.forEach((clip) => {
+                this.animationMixer.clipAction(clip).play();
+            });
+        }
+
         this.loaded = true;
         this.update(0, 0);
 
         return true;
     }
 
-    update(_deltaTime, elapsedTime) {
+    update(deltaTime, elapsedTime) {
         if (this.disposed || !this.loaded) return;
+
+        this.animationMixer?.update(Math.max(0, deltaTime));
 
         const isMobile = this.mobileViewport.matches;
         const screenHeight = isMobile
@@ -171,6 +182,9 @@ export class PrivacyBoxVisual {
         if (this.disposed) return;
 
         this.disposed = true;
+        this.animationMixer?.stopAllAction();
+        this.animationMixer?.uncacheRoot(this.animationMixer.getRoot());
+        this.animationMixer = null;
         this.group.removeFromParent();
         disposeObject3D(this.group);
         this.group.clear();
