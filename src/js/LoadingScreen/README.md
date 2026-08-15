@@ -42,20 +42,22 @@ volume then contracts over five seconds—twice the configured 2.5-second base
 return duration—while Brownian motion continues.
 
 `PrivacyBoxVisual.js` loads `assets/boxmain.glb` with its embedded base-color,
-opacity, and roughness textures intact. Its emissive contribution is disabled,
-so the box remains visible without adding bloom to the scene. It stays
-screen-anchored opposite the central artwork with a gentle hover.
+opacity, roughness, and emissive textures intact. It remains screen-anchored in
+the upper-right while the central artwork is orbited, with a gentle hover and a
+slow breath applied through the authored emissive material.
 Its invisible `butterflyArrivalAnchor` is the destination hook for the incoming
-privacy-detail butterflies.
+privacy-detail butterflies that will be added in the next iteration.
 
 `ButterflyStreamVisual.js` loads the authored pink and purple butterfly GLBs
 once, then reuses their geometry, textures, and built-in animation clips. Four
 small, differently sized butterflies flap and hover close to the woman while
 facing inward. At five-second intervals, a larger pink-and-purple pair emerges
 from behind the woman. They weave past one another, flap toward the box, shrink
-into its arrival anchor, and leave a short colored glow as they disappear. The
-safe box remains camera-anchored, does not glow, and does not inherit the
-woman's rotation.
+into its arrival anchor, and leave a short colored glow as they disappear. Their
+distance from the box continuously drives its brightness: the box grows
+brighter as they approach, peaks at the opening, and dims back to its brighter
+baseline breathing glow as they disappear. The safe box remains camera-anchored
+and does not inherit the woman's rotation.
 
 The build copies everything in `assets/` to the same stable path under `dist`.
 This avoids bundler-specific GLB URL rewriting and is the convention for future
