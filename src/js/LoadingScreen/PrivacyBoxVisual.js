@@ -11,10 +11,7 @@ export const PRIVACY_BOX_SCREEN_HEIGHT_MOBILE = 0.17;
 export const PRIVACY_BOX_CAMERA_DISTANCE = 4.2;
 export const PRIVACY_BOX_HOVER_AMPLITUDE = 0.008;
 export const PRIVACY_BOX_HOVER_SPEED = 1.05;
-export const PRIVACY_BOX_BREATH_SPEED = 0.82;
-export const PRIVACY_BOX_GLOW_MIN = 0.62;
-export const PRIVACY_BOX_GLOW_MAX = 1.04;
-export const PRIVACY_BOX_PROXIMITY_GLOW_STRENGTH = 0.7;
+export const PRIVACY_BOX_NON_GLOW_EMISSIVE_INTENSITY = 0.18;
 
 const BOX_URL = new URL("./assets/boxmain.glb", import.meta.url).href;
 const gltfLoader = new GLTFLoader();
@@ -29,7 +26,6 @@ export class PrivacyBoxVisual {
         this.animationMixer = null;
         this.arrivalAnchor = new THREE.Object3D();
         this.arrivalAnchor.name = "Butterfly arrival anchor";
-        this.emissiveMaterials = [];
         this.disposed = false;
         this.loaded = false;
         this.mobileViewport = window.matchMedia("(max-width: 760px)");
@@ -38,7 +34,6 @@ export class PrivacyBoxVisual {
         this.screenPoint = new THREE.Vector3();
         this.viewDirection = new THREE.Vector3();
         this.hoverOffset = new THREE.Vector3();
-        this.butterflyProximityGlow = 0;
     }
 
     get object3D() {
@@ -53,9 +48,7 @@ export class PrivacyBoxVisual {
         return this.arrivalAnchor.getWorldPosition(target);
     }
 
-    setButterflyProximityGlow(strength) {
-        this.butterflyProximityGlow = THREE.MathUtils.clamp(strength, 0, 1);
-    }
+    setButterflyProximityGlow() {}
 
     async initialize() {
         const gltf = await gltfLoader.loadAsync(BOX_URL);
@@ -92,10 +85,11 @@ export class PrivacyBoxVisual {
             materials.forEach((material) => {
                 if (!material) return;
 
-                this.emissiveMaterials.push({
-                    material,
-                    authoredIntensity: material.emissiveIntensity || 1
-                });
+                if ("emissiveIntensity" in material) {
+                    material.emissiveIntensity =
+                        PRIVACY_BOX_NON_GLOW_EMISSIVE_INTENSITY;
+                }
+                material.toneMapped = true;
                 material.needsUpdate = true;
             });
         });
@@ -130,14 +124,6 @@ export class PrivacyBoxVisual {
             THREE.MathUtils.degToRad(this.camera.fov) * 0.5
         ) * PRIVACY_BOX_CAMERA_DISTANCE;
         const hoverWave = Math.sin(elapsedTime * PRIVACY_BOX_HOVER_SPEED);
-        const breathWave = 0.5 + 0.5 * Math.sin(
-            elapsedTime * PRIVACY_BOX_BREATH_SPEED - Math.PI * 0.5
-        );
-        const glowMultiplier = THREE.MathUtils.lerp(
-            PRIVACY_BOX_GLOW_MIN,
-            PRIVACY_BOX_GLOW_MAX,
-            breathWave
-        );
 
         this.anchorNdc.set(
             isMobile
@@ -169,13 +155,6 @@ export class PrivacyBoxVisual {
 
         const scale = visibleCameraHeight * screenHeight / this.visibleHeight;
         this.group.scale.setScalar(scale);
-
-        this.emissiveMaterials.forEach((entry) => {
-            entry.material.emissiveIntensity = entry.authoredIntensity *
-                glowMultiplier *
-                (1 + this.butterflyProximityGlow *
-                    PRIVACY_BOX_PROXIMITY_GLOW_STRENGTH);
-        });
     }
 
     dispose() {
@@ -188,8 +167,6 @@ export class PrivacyBoxVisual {
         this.group.removeFromParent();
         disposeObject3D(this.group);
         this.group.clear();
-        this.emissiveMaterials.length = 0;
-        this.butterflyProximityGlow = 0;
         this.loaded = false;
     }
 }
