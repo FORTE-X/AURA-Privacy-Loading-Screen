@@ -35,8 +35,13 @@ artwork. The privacy headline is anchored above the composition, while the
 description, live status, progress line, and Capture / Encrypt / Secure sequence
 are anchored below it with text shadows for contrast. On mobile, the desktop
 sidebar and earlier bottom bar are removed; only a compact floating upload pill
-appears before import, then disappears for the full-screen experience. The vault
-uses a closer mobile anchor so it stays visually connected to the woman. The
+appears before import, then disappears for the full-screen experience. Mobile
+uses a dedicated paired layout: the woman is moderately smaller and contained
+inside the left half, while the compact vault is anchored in the right half with
+a deliberate gap so the two assets remain side by side without overlap. Mobile
+also uses a tuned lower-resolution bloom pass, restoring the luminous vault,
+flowers, butterflies, and particle trails without returning to the larger asset
+sizes. The
 camera remains fixed at the authored front view; orbiting, panning, and zooming
 are disabled.
 

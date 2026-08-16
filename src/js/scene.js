@@ -8,6 +8,9 @@ import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPa
 const viewport = document.getElementById("viewport");
 const mobileViewport = window.matchMedia("(max-width: 760px)").matches;
 const pixelRatio = Math.min(window.devicePixelRatio, mobileViewport ? 1.25 : 2);
+const bloomStrength = mobileViewport ? 0.4 : 0.42;
+const bloomRadius = mobileViewport ? 0.68 : 0.72;
+const bloomThreshold = mobileViewport ? 0.66 : 0.72;
 
 export const CAMERA_TARGET_Y = 0.75;
 
@@ -44,32 +47,25 @@ renderer.toneMappingExposure = 0.9;
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 viewport.appendChild(renderer.domElement);
 
-export const composer = mobileViewport ? null : new EffectComposer(renderer);
+export const composer = new EffectComposer(renderer);
 
-if (composer) {
-    const renderPass = new RenderPass(scene, camera);
-    const bloomPass = new UnrealBloomPass(
-        new THREE.Vector2(viewport.clientWidth, viewport.clientHeight),
-        0.42,
-        0.72,
-        0.72
-    );
-    const outputPass = new OutputPass();
+const renderPass = new RenderPass(scene, camera);
+const bloomPass = new UnrealBloomPass(
+    new THREE.Vector2(viewport.clientWidth, viewport.clientHeight),
+    bloomStrength,
+    bloomRadius,
+    bloomThreshold
+);
+const outputPass = new OutputPass();
 
-    composer.setPixelRatio(pixelRatio);
-    composer.setSize(viewport.clientWidth, viewport.clientHeight);
-    composer.addPass(renderPass);
-    composer.addPass(bloomPass);
-    composer.addPass(outputPass);
-}
+composer.setPixelRatio(pixelRatio);
+composer.setSize(viewport.clientWidth, viewport.clientHeight);
+composer.addPass(renderPass);
+composer.addPass(bloomPass);
+composer.addPass(outputPass);
 
 export function renderScene() {
-    if (composer) {
-        composer.render();
-        return;
-    }
-
-    renderer.render(scene, camera);
+    composer.render();
 }
 
 window.addEventListener("resize", () => {
@@ -79,5 +75,5 @@ window.addEventListener("resize", () => {
     camera.aspect = width / height;
     camera.updateProjectionMatrix();
     renderer.setSize(width, height);
-    composer?.setSize(width, height);
+    composer.setSize(width, height);
 });

@@ -2,10 +2,11 @@ import * as THREE from "three";
 
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
-export const MODEL_VIEW_HEIGHT_RATIO = 0.68;
+export const MODEL_VIEW_HEIGHT_RATIO_DESKTOP = 0.68;
+export const MODEL_VIEW_HEIGHT_RATIO_MOBILE = 0.55;
 export const MODEL_VERTICAL_POSITION = 0.75;
 export const MODEL_SCREEN_X_DESKTOP = -0.44;
-export const MODEL_SCREEN_X_MOBILE = -0.36;
+export const MODEL_SCREEN_X_MOBILE = -0.32;
 export const MODEL_FLOAT_AMPLITUDE = 0.045;
 export const MODEL_FLOAT_SPEED = 0.55;
 export const MODEL_TURN_AMPLITUDE = 0.045;
@@ -135,7 +136,10 @@ export class Test3LoadingVisual {
         const visibleHeight = 2 * Math.tan(
             THREE.MathUtils.degToRad(this.camera.fov) * 0.5
         ) * cameraDistance;
-        const scale = visibleHeight * MODEL_VIEW_HEIGHT_RATIO /
+        const viewHeightRatio = this.mobileViewport.matches
+            ? MODEL_VIEW_HEIGHT_RATIO_MOBILE
+            : MODEL_VIEW_HEIGHT_RATIO_DESKTOP;
+        const scale = visibleHeight * viewHeightRatio /
             Math.max(size.y, Number.EPSILON);
 
         model.name = "test3main2.glb Textured Model and Flowers";
