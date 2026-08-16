@@ -36,7 +36,8 @@ description, live status, progress line, and Capture / Encrypt / Secure sequence
 are anchored below it with text shadows for contrast. On mobile, the desktop
 sidebar and earlier bottom bar are removed; only a compact floating upload pill
 appears before import, then disappears for the full-screen experience. The vault
-uses a closer mobile anchor so it stays visually connected to the woman. The
+uses a compact mobile scale and a slightly wider anchor gap so it remains
+visually connected without crowding or overlapping the woman. The
 camera remains fixed at the authored front view; orbiting, panning, and zooming
 are disabled.
 
