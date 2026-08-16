@@ -280,12 +280,8 @@ body {
     position: absolute;
     z-index: 1;
     inset: 0;
-    cursor: grab;
-    touch-action: none;
-}
-
-#viewport:active {
-    cursor: grabbing;
+    cursor: default;
+    touch-action: manipulation;
 }
 
 #viewport canvas {

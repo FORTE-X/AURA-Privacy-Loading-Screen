@@ -5,16 +5,14 @@ import { Test3LoadingVisual } from "./LoadingScreen/Test3LoadingVisual.js";
 import { ModelUploadController } from "./ModelUpload/ModelUploadController.js";
 import {
     camera,
-    controls,
-    disposeSceneControls,
     renderScene,
-    scene,
-    updateSceneControls
+    scene
 } from "./scene.js";
 
 const emptyState = document.getElementById("emptyState");
 const loadingInterface = document.getElementById("loadingInterface");
 const loadingStatus = document.getElementById("loadingStatus");
+const viewport = document.getElementById("viewport");
 
 let loadingStage = null;
 let test3Visual = null;
@@ -33,8 +31,7 @@ const uploadController = new ModelUploadController({
 });
 const handleModelInteraction = () => test3Visual?.scatterParticles();
 
-controls.enabled = false;
-controls.addEventListener("start", handleModelInteraction);
+viewport.addEventListener("pointerdown", handleModelInteraction);
 uploadController.initialize();
 
 async function startLoadingExperience(metadata) {
@@ -58,7 +55,6 @@ async function startLoadingExperience(metadata) {
     emptyState.hidden = true;
     loadingInterface.hidden = false;
     loadingStatus.textContent = `Securing ${metadata.name}`;
-    controls.enabled = true;
     stage.initialize();
 
     const [mainResult, boxResult] = await Promise.allSettled([
@@ -121,7 +117,6 @@ async function startLoadingExperience(metadata) {
 
 function stopLoadingExperience({ showIdle }) {
     experienceGeneration += 1;
-    controls.enabled = false;
     butterflyVisual?.dispose();
     test3Visual?.dispose();
     privacyBoxVisual?.dispose();
@@ -183,7 +178,6 @@ function animate(currentTime) {
     previousFrameTime = currentTime;
     elapsedTime += deltaTime;
 
-    updateSceneControls();
     loadingStage?.update(deltaTime, elapsedTime);
     renderScene();
 }
@@ -192,8 +186,7 @@ requestAnimationFrame(animate);
 
 window.addEventListener("pagehide", () => {
     pageDisposed = true;
-    controls.removeEventListener("start", handleModelInteraction);
+    viewport.removeEventListener("pointerdown", handleModelInteraction);
     uploadController.dispose();
     stopLoadingExperience({ showIdle: false });
-    disposeSceneControls();
 }, { once: true });

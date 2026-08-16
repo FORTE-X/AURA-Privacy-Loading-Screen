@@ -30,20 +30,20 @@ compact lower light remains at the model's cut-off edge and briefly dims to 50%
 every two seconds.
 
 The full authored composition is allowed to extend behind the lower loading
-copy. A localized dark fade protects text contrast. Camera orbit stays locked
-to the artwork at a fixed distance, with panning and zoom disabled and narrow
-horizontal and vertical rotation limits.
+copy. A localized dark fade protects text contrast. The camera remains fixed at
+the authored front view; orbiting, panning, and zooming are disabled.
 
 A single efficient `THREE.Points` field adds soft particles around the central
 torso. The particles use a bounded Brownian random walk, so they drift in varied
 directions but remain gathered around the composition instead of escaping.
-Starting any mouse or touch orbit scatters the field outward again. Its bounded
+Starting any mouse or touch interaction scatters the field outward again without
+moving the camera. Its bounded
 volume then contracts over five seconds—twice the configured 2.5-second base
 return duration—while Brownian motion continues.
 
 `PrivacyBoxVisual.js` loads `assets/boxmain.glb` with its embedded base-color,
 opacity, roughness, and emissive textures intact. It remains screen-anchored in
-the upper-right while the central artwork is orbited, with a gentle hover and a
+the upper-right while the central artwork animates, with a gentle hover and a
 slow breath applied through the authored emissive material.
 Its invisible `butterflyArrivalAnchor` is the destination hook for the incoming
 privacy-detail butterflies that will be added in the next iteration.
