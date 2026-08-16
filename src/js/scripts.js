@@ -12,7 +12,6 @@ import {
 const emptyState = document.getElementById("emptyState");
 const loadingInterface = document.getElementById("loadingInterface");
 const loadingStatus = document.getElementById("loadingStatus");
-const viewport = document.getElementById("viewport");
 
 let loadingStage = null;
 let test3Visual = null;
@@ -29,9 +28,6 @@ const uploadController = new ModelUploadController({
     onImported: (metadata) => startLoadingExperience(metadata),
     onRemoved: () => stopLoadingExperience({ showIdle: true })
 });
-const handleModelInteraction = () => test3Visual?.scatterParticles();
-
-viewport.addEventListener("pointerdown", handleModelInteraction);
 uploadController.initialize();
 
 async function startLoadingExperience(metadata) {
@@ -186,7 +182,6 @@ requestAnimationFrame(animate);
 
 window.addEventListener("pagehide", () => {
     pageDisposed = true;
-    viewport.removeEventListener("pointerdown", handleModelInteraction);
     uploadController.dispose();
     stopLoadingExperience({ showIdle: false });
 }, { once: true });

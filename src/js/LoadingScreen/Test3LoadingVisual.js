@@ -20,21 +20,6 @@ export const FLOWER_BASE_EMISSIVE_INTENSITY = 1.15;
 export const FLOWER_BLOOM_MIN = 0.84;
 export const FLOWER_BLOOM_MAX = 1.08;
 
-export const PARTICLE_COUNT_DESKTOP = 184;
-export const PARTICLE_COUNT_MOBILE = 112;
-export const PARTICLE_SPREAD_X = 0.95;
-export const PARTICLE_SPREAD_Y = 0.38;
-export const PARTICLE_SPREAD_Z = 0.42;
-export const PARTICLE_SIZE = 0.114;
-export const PARTICLE_OPACITY = 0.96;
-export const PARTICLE_BROWNIAN_FORCE = 0.066;
-export const PARTICLE_CENTERING_FORCE = 0.28;
-export const PARTICLE_DRAG = 1.9;
-export const PARTICLE_BASE_RETURN_DURATION = 2.5;
-export const PARTICLE_SCATTER_RETURN_MULTIPLIER = 2;
-export const PARTICLE_SCATTER_RADIUS = 2;
-export const PARTICLE_SCATTER_IMPULSE = 0.16;
-
 export const BOTTOM_GLOW_DIM_INTERVAL = 2;
 export const BOTTOM_GLOW_DIM_DURATION = 0.42;
 export const BOTTOM_GLOW_DIM_STRENGTH = 0.5;
@@ -60,7 +45,6 @@ export class Test3LoadingVisual {
         this.group = new THREE.Group();
         this.group.name = "Test3 Authored Loading Visual";
         this.flowerAnimations = [];
-        this.particleField = null;
         this.bottomLight = null;
         this.bottomGlow = null;
         this.contentSize = new THREE.Vector3();
@@ -73,10 +57,6 @@ export class Test3LoadingVisual {
 
     get object3D() {
         return this.group;
-    }
-
-    scatterParticles() {
-        scatterParticleField(this.particleField);
     }
 
     getButterflyLayoutSize(target = new THREE.Vector3()) {
@@ -167,8 +147,6 @@ export class Test3LoadingVisual {
             -size.z * 0.58
         );
 
-        this.particleField = createParticleField(size);
-
         this.bottomLight = new THREE.PointLight(
             0xef82ff,
             BOTTOM_LIGHT_MAX_INTENSITY,
@@ -187,7 +165,6 @@ export class Test3LoadingVisual {
         this.group.position.y = MODEL_VERTICAL_POSITION;
         this.group.add(
             model,
-            this.particleField.points,
             this.bottomLight,
             this.bottomGlow,
             this.butterflyLayer,
@@ -220,8 +197,6 @@ export class Test3LoadingVisual {
             glowBrightness;
         this.bottomGlow.material.opacity = BOTTOM_GLOW_MAX_OPACITY *
             glowBrightness;
-
-        updateParticleField(this.particleField, deltaTime);
 
         this.flowerAnimations.forEach((flower) => {
             const hoverWave = Math.sin(
@@ -277,243 +252,10 @@ export class Test3LoadingVisual {
         disposeObject3D(this.group);
         this.group.clear();
         this.flowerAnimations.length = 0;
-        this.particleField = null;
         this.bottomLight = null;
         this.bottomGlow = null;
         this.contentSize.set(0, 0, 0);
     }
-}
-
-function createParticleField(size) {
-    const count = window.matchMedia("(max-width: 760px)").matches
-        ? PARTICLE_COUNT_MOBILE
-        : PARTICLE_COUNT_DESKTOP;
-    const positions = new Float32Array(count * 3);
-    const velocities = new Float32Array(count * 3);
-    const colors = new Float32Array(count * 3);
-    const radii = new THREE.Vector3(
-        size.x * PARTICLE_SPREAD_X,
-        size.y * PARTICLE_SPREAD_Y,
-        Math.max(size.z * PARTICLE_SPREAD_Z, size.x * 0.16)
-    );
-    const center = new THREE.Vector3(0, size.y * 0.04, 0);
-    const palette = [
-        new THREE.Color(0xffd5f5),
-        new THREE.Color(0xd59cff),
-        new THREE.Color(0xffffff),
-        new THREE.Color(0xb56dff)
-    ];
-
-    for (let index = 0; index < count; index += 1) {
-        const offset = index * 3;
-        const radius = Math.cbrt(seededUnit(index, 20));
-        const azimuth = seededUnit(index, 21) * Math.PI * 2;
-        const vertical = seededUnit(index, 22) * 2 - 1;
-        const horizontal = Math.sqrt(1 - vertical * vertical);
-        const color = palette[index % palette.length];
-
-        positions[offset] = center.x +
-            Math.cos(azimuth) * horizontal * radius * radii.x;
-        positions[offset + 1] = center.y +
-            vertical * radius * radii.y;
-        positions[offset + 2] = center.z +
-            Math.sin(azimuth) * horizontal * radius * radii.z;
-
-        colors[offset] = color.r;
-        colors[offset + 1] = color.g;
-        colors[offset + 2] = color.b;
-    }
-
-    const geometry = new THREE.BufferGeometry();
-    geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
-    geometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
-
-    const material = new THREE.PointsMaterial({
-        map: createParticleTexture(),
-        size: Math.max(size.x, size.y) * PARTICLE_SIZE,
-        sizeAttenuation: true,
-        transparent: true,
-        opacity: PARTICLE_OPACITY,
-        vertexColors: true,
-        depthTest: false,
-        depthWrite: false,
-        blending: THREE.AdditiveBlending,
-        toneMapped: false
-    });
-    const points = new THREE.Points(geometry, material);
-
-    points.name = "Central Brownian particle field";
-    points.renderOrder = 4;
-
-    return {
-        points,
-        positions,
-        velocities,
-        center,
-        radii,
-        randomState: 0x51f15e3d,
-        scatterDuration: PARTICLE_BASE_RETURN_DURATION *
-            PARTICLE_SCATTER_RETURN_MULTIPLIER,
-        scatterRemaining: 0
-    };
-}
-
-function updateParticleField(field, deltaTime) {
-    if (!field) return;
-
-    const timeStep = Math.min(deltaTime, 1 / 30);
-    const noiseScale = PARTICLE_BROWNIAN_FORCE * Math.sqrt(timeStep);
-    const drag = Math.exp(-PARTICLE_DRAG * timeStep);
-    const scatterProgress = field.scatterRemaining > 0
-        ? 1 - field.scatterRemaining / field.scatterDuration
-        : 1;
-    const easedRecovery = scatterProgress * scatterProgress *
-        (3 - 2 * scatterProgress);
-    const allowedRadius = THREE.MathUtils.lerp(
-        PARTICLE_SCATTER_RADIUS,
-        1,
-        easedRecovery
-    );
-
-    for (let offset = 0; offset < field.positions.length; offset += 3) {
-        const dx = field.positions[offset] - field.center.x;
-        const dy = field.positions[offset + 1] - field.center.y;
-        const dz = field.positions[offset + 2] - field.center.z;
-
-        field.velocities[offset] += (
-            nextRandom(field) * 2 - 1
-        ) * noiseScale - dx * PARTICLE_CENTERING_FORCE * timeStep;
-        field.velocities[offset + 1] += (
-            nextRandom(field) * 2 - 1
-        ) * noiseScale - dy * PARTICLE_CENTERING_FORCE * timeStep;
-        field.velocities[offset + 2] += (
-            nextRandom(field) * 2 - 1
-        ) * noiseScale - dz * PARTICLE_CENTERING_FORCE * timeStep;
-
-        field.velocities[offset] *= drag;
-        field.velocities[offset + 1] *= drag;
-        field.velocities[offset + 2] *= drag;
-
-        field.positions[offset] += field.velocities[offset] * timeStep;
-        field.positions[offset + 1] += field.velocities[offset + 1] * timeStep;
-        field.positions[offset + 2] += field.velocities[offset + 2] * timeStep;
-
-        const normalizedRadius = Math.sqrt(
-            Math.pow((field.positions[offset] - field.center.x) /
-                field.radii.x, 2) +
-            Math.pow((field.positions[offset + 1] - field.center.y) /
-                field.radii.y, 2) +
-            Math.pow((field.positions[offset + 2] - field.center.z) /
-                field.radii.z, 2)
-        );
-
-        if (normalizedRadius > allowedRadius) {
-            const correction = allowedRadius / normalizedRadius;
-
-            field.positions[offset] = field.center.x +
-                (field.positions[offset] - field.center.x) * correction;
-            field.positions[offset + 1] = field.center.y +
-                (field.positions[offset + 1] - field.center.y) * correction;
-            field.positions[offset + 2] = field.center.z +
-                (field.positions[offset + 2] - field.center.z) * correction;
-            field.velocities[offset] *= -0.28;
-            field.velocities[offset + 1] *= -0.28;
-            field.velocities[offset + 2] *= -0.28;
-        }
-    }
-
-    field.scatterRemaining = Math.max(
-        0,
-        field.scatterRemaining - timeStep
-    );
-    field.points.geometry.attributes.position.needsUpdate = true;
-}
-
-function scatterParticleField(field) {
-    if (!field) return;
-
-    for (let offset = 0; offset < field.positions.length; offset += 3) {
-        let nx = (field.positions[offset] - field.center.x) / field.radii.x;
-        let ny = (field.positions[offset + 1] - field.center.y) /
-            field.radii.y;
-        let nz = (field.positions[offset + 2] - field.center.z) /
-            field.radii.z;
-        let length = Math.hypot(nx, ny, nz);
-
-        if (length < 0.001) {
-            const azimuth = nextRandom(field) * Math.PI * 2;
-            const vertical = nextRandom(field) * 2 - 1;
-            const horizontal = Math.sqrt(1 - vertical * vertical);
-
-            nx = Math.cos(azimuth) * horizontal;
-            ny = vertical;
-            nz = Math.sin(azimuth) * horizontal;
-            length = 1;
-        }
-
-        nx /= length;
-        ny /= length;
-        nz /= length;
-
-        const scatterRadius = THREE.MathUtils.lerp(
-            1.18,
-            PARTICLE_SCATTER_RADIUS,
-            nextRandom(field)
-        );
-        field.positions[offset] = field.center.x +
-            nx * field.radii.x * scatterRadius;
-        field.positions[offset + 1] = field.center.y +
-            ny * field.radii.y * scatterRadius;
-        field.positions[offset + 2] = field.center.z +
-            nz * field.radii.z * scatterRadius;
-
-        field.velocities[offset] = nx * PARTICLE_SCATTER_IMPULSE;
-        field.velocities[offset + 1] = ny * PARTICLE_SCATTER_IMPULSE;
-        field.velocities[offset + 2] = nz * PARTICLE_SCATTER_IMPULSE;
-    }
-
-    field.scatterRemaining = field.scatterDuration;
-    field.points.geometry.attributes.position.needsUpdate = true;
-}
-
-function nextRandom(field) {
-    let state = field.randomState;
-
-    state ^= state << 13;
-    state ^= state >>> 17;
-    state ^= state << 5;
-    field.randomState = state >>> 0;
-    return field.randomState / 4294967296;
-}
-
-function createParticleTexture() {
-    const canvas = document.createElement("canvas");
-    const size = 64;
-    const center = size * 0.5;
-
-    canvas.width = size;
-    canvas.height = size;
-
-    const context = canvas.getContext("2d");
-    const gradient = context.createRadialGradient(
-        center,
-        center,
-        0,
-        center,
-        center,
-        center
-    );
-
-    gradient.addColorStop(0, "rgba(255, 255, 255, 1)");
-    gradient.addColorStop(0.24, "rgba(255, 232, 255, 0.92)");
-    gradient.addColorStop(0.62, "rgba(203, 115, 255, 0.32)");
-    gradient.addColorStop(1, "rgba(148, 62, 218, 0)");
-    context.fillStyle = gradient;
-    context.fillRect(0, 0, size, size);
-
-    const texture = new THREE.CanvasTexture(canvas);
-    texture.colorSpace = THREE.SRGBColorSpace;
-    return texture;
 }
 
 function prepareFlower(flower, index, sourceMaterials) {

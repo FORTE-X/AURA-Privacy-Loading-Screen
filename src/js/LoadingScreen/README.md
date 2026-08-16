@@ -33,13 +33,10 @@ The full authored composition is allowed to extend behind the lower loading
 copy. A localized dark fade protects text contrast. The camera remains fixed at
 the authored front view; orbiting, panning, and zooming are disabled.
 
-A single efficient `THREE.Points` field adds soft particles around the central
-torso. The particles use a bounded Brownian random walk, so they drift in varied
-directions but remain gathered around the composition instead of escaping.
-Starting any mouse or touch interaction scatters the field outward again without
-moving the camera. Its bounded
-volume then contracts over five seconds—twice the configured 2.5-second base
-return duration—while Brownian motion continues.
+The earlier central particle cloud has been removed from the woman. Its single
+efficient `THREE.Points` pool now forms a fading pink, lavender, and white trail
+behind the transfer butterflies. Particles inherit a small amount of backward
+flight velocity and Brownian drift, then fade naturally before the next cycle.
 
 `PrivacyBoxVisual.js` loads `assets/boxmain.glb` with its embedded base-color,
 opacity, roughness, and emissive textures intact. It remains screen-anchored in
@@ -55,9 +52,10 @@ even while the vault moves and opens.
 `ButterflyStreamVisual.js` loads the authored pink and purple butterfly GLBs
 once, then reuses their geometry, textures, and built-in animation clips. Four
 small, differently sized butterflies flap and hover close to the woman while
-facing inward. At five-second intervals, a larger pink-and-purple pair emerges
-from behind the woman. They weave past one another, flap toward the box, shrink
-into its arrival anchor, and leave a short colored glow as they disappear. Their
+facing inward. At five-second intervals, six varied pink and purple butterflies
+emerge from behind the woman. They follow wider perpendicular weaving paths,
+flap toward the box, shrink into its arrival anchor, and leave particle trails
+plus a short colored glow as they disappear. Their
 distance from the box continuously drives its brightness: the box grows
 brighter as they approach, peaks at the opening, and dims back to its brighter
 baseline breathing glow as they disappear. The vault animation begins 1.25
