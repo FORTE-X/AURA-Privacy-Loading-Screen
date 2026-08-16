@@ -261,6 +261,12 @@ body {
     overflow: hidden;
     isolation: isolate;
     background:
+        radial-gradient(
+            circle at 72% 50%,
+            rgba(181, 109, 255, 0.11),
+            rgba(122, 72, 174, 0.045) 22%,
+            transparent 43%
+        ),
         radial-gradient(ellipse at 50% 48%, rgba(75, 39, 91, 0.2), transparent 68%),
         linear-gradient(180deg, #0a0710 0%, #05040a 62%, #020204 100%);
 }

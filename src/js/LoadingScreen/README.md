@@ -40,8 +40,10 @@ flight velocity and Brownian drift, then fade naturally before the next cycle.
 
 `PrivacyBoxVisual.js` loads `assets/boxmain.glb` with its embedded base-color,
 opacity, roughness, and emissive textures intact. It remains screen-anchored in
-the upper-right while the central artwork animates, with a gentle hover and a
-slow breath applied through the authored emissive material.
+the right half at the page centerline while the central artwork animates, with
+a gentle hover and a slow breath applied through the authored emissive material.
+Its display size is ten percent larger, and a restrained violet radial backdrop
+echoes the vault palette without flattening the scene contrast.
 Its invisible `butterflyArrivalAnchor` is the destination hook for the incoming
 privacy-detail butterflies. The authored 3.75-second vault clip is driven by
 the same five-second transfer timeline as the butterflies rather than looping
