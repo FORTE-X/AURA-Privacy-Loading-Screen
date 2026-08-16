@@ -365,63 +365,44 @@ body {
     font-size: 14px;
 }
 
-.brand {
-    position: absolute;
-    z-index: 3;
-    top: clamp(24px, 5vw, 52px);
-    left: clamp(24px, 6vw, 76px);
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-
-.brand-name {
-    color: transparent;
-    font-size: clamp(22px, 2.2vw, 31px);
-    font-weight: 760;
-    letter-spacing: 0.28em;
-    background: linear-gradient(100deg, #fff9fc, #efb4d4 54%, #b5a6f4);
-    background-clip: text;
-    -webkit-background-clip: text;
-}
-
 .loading-copy {
     position: absolute;
     z-index: 3;
-    right: 0;
-    bottom: clamp(38px, 7vh, 84px);
-    left: 0;
-    width: min(88%, 430px);
-    margin: auto;
+    inset: 0;
     pointer-events: none;
     text-align: center;
 }
 
-.loading-copy::before {
+.loading-headline,
+.loading-footer {
     position: absolute;
-    z-index: -1;
-    inset: -32px -42px -28px;
-    border-radius: 50%;
-    content: "";
-    pointer-events: none;
-    background: radial-gradient(
-        ellipse at center,
-        rgba(2, 1, 5, 0.94) 0%,
-        rgba(2, 1, 5, 0.78) 48%,
-        rgba(2, 1, 5, 0) 78%
-    );
-    filter: blur(8px);
+    right: 0;
+    left: 0;
+    width: min(88%, 540px);
+    margin: auto;
+    text-shadow:
+        0 2px 9px rgba(0, 0, 0, 0.98),
+        0 0 24px rgba(0, 0, 0, 0.9);
+}
+
+.loading-headline {
+    top: clamp(22px, 4.5vh, 52px);
+}
+
+.loading-footer {
+    bottom: clamp(22px, 4.5vh, 48px);
 }
 
 .loading-copy .eyebrow {
-    margin-bottom: 12px;
+    margin-bottom: 8px;
     color: #d991c1;
 }
 
 .loading-copy h1 {
-    font-size: clamp(22px, 3.2vw, 38px);
+    font-size: clamp(22px, 2.7vw, 36px);
     font-weight: 560;
     letter-spacing: -0.025em;
+    text-wrap: balance;
 }
 
 #loadingStatus {
@@ -605,19 +586,24 @@ body {
     }
 
     .brand {
-        right: 0;
-        left: 0;
-        align-items: center;
-        text-align: center;
+        display: none;
     }
 
     .loading-copy {
-        bottom: calc(26px + env(safe-area-inset-bottom));
+        inset: 0;
+    }
+
+    .loading-headline,
+    .loading-footer {
         width: min(92%, 430px);
     }
 
-    .loading-copy::before {
-        inset: -30px -18px -24px;
+    .loading-headline {
+        top: 20px;
+    }
+
+    .loading-footer {
+        bottom: calc(18px + env(safe-area-inset-bottom));
     }
 
     .loading-description {

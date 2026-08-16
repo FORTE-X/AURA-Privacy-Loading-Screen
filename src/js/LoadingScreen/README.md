@@ -30,8 +30,11 @@ compact lower light remains at the model's cut-off edge and briefly dims to 50%
 every two seconds.
 
 The full authored composition is allowed to extend behind the lower loading
-copy. A localized dark fade protects text contrast. The camera remains fixed at
-the authored front view; orbiting, panning, and zooming are disabled.
+interface. The large center dark fade has been removed so it no longer masks the
+artwork. The privacy headline is anchored above the composition, while the
+description, live status, progress line, and Capture / Encrypt / Secure sequence
+are anchored below it with text shadows for contrast. The camera remains fixed
+at the authored front view; orbiting, panning, and zooming are disabled.
 
 The earlier central particle cloud has been removed from the woman. Its single
 efficient `THREE.Points` pool now forms a fading pink, lavender, and white trail
