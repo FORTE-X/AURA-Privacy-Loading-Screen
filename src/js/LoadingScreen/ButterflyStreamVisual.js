@@ -37,7 +37,7 @@ const AMBIENT_LAYOUT = [
     {
         sourceIndex: 0,
         sizeRatio: 0.034,
-        x: -0.27,
+        x: -0.17,
         y: 0.32,
         z: 0.68,
         phase: 0.25,
@@ -47,7 +47,7 @@ const AMBIENT_LAYOUT = [
     {
         sourceIndex: 1,
         sizeRatio: 0.046,
-        x: 0.34,
+        x: 0.22,
         y: 0.23,
         z: 0.84,
         phase: 1.7,
@@ -57,7 +57,7 @@ const AMBIENT_LAYOUT = [
     {
         sourceIndex: 1,
         sizeRatio: 0.039,
-        x: -0.32,
+        x: -0.21,
         y: 0.09,
         z: 0.9,
         phase: 3.1,
@@ -67,7 +67,7 @@ const AMBIENT_LAYOUT = [
     {
         sourceIndex: 0,
         sizeRatio: 0.052,
-        x: 0.25,
+        x: 0.14,
         y: -0.08,
         z: 0.7,
         phase: 4.5,
@@ -77,7 +77,7 @@ const AMBIENT_LAYOUT = [
     {
         sourceIndex: 1,
         sizeRatio: 0.03,
-        x: -0.19,
+        x: -0.1,
         y: 0.41,
         z: 0.79,
         phase: 5.4,
@@ -87,7 +87,7 @@ const AMBIENT_LAYOUT = [
     {
         sourceIndex: 0,
         sizeRatio: 0.041,
-        x: 0.23,
+        x: 0.16,
         y: 0.36,
         z: 0.93,
         phase: 2.35,
@@ -97,7 +97,7 @@ const AMBIENT_LAYOUT = [
     {
         sourceIndex: 0,
         sizeRatio: 0.028,
-        x: -0.37,
+        x: -0.24,
         y: 0.2,
         z: 0.75,
         phase: 3.85,
@@ -107,7 +107,7 @@ const AMBIENT_LAYOUT = [
     {
         sourceIndex: 1,
         sizeRatio: 0.036,
-        x: 0.39,
+        x: 0.26,
         y: 0.04,
         z: 0.88,
         phase: 0.95,
@@ -117,7 +117,7 @@ const AMBIENT_LAYOUT = [
     {
         sourceIndex: 1,
         sizeRatio: 0.043,
-        x: -0.22,
+        x: -0.15,
         y: -0.15,
         z: 0.86,
         phase: 4.95,
@@ -127,7 +127,7 @@ const AMBIENT_LAYOUT = [
     {
         sourceIndex: 0,
         sizeRatio: 0.032,
-        x: 0.29,
+        x: 0.19,
         y: -0.25,
         z: 0.72,
         phase: 1.25,
