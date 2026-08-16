@@ -3,7 +3,7 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
 export const PRIVACY_BOX_SCREEN_X_DESKTOP = 0.44;
-export const PRIVACY_BOX_SCREEN_X_MOBILE = 0.36;
+export const PRIVACY_BOX_SCREEN_X_MOBILE = 0.26;
 export const PRIVACY_BOX_SCREEN_Y_DESKTOP = 0;
 export const PRIVACY_BOX_SCREEN_Y_MOBILE = 0;
 export const PRIVACY_BOX_SCREEN_HEIGHT_DESKTOP = 0.242;

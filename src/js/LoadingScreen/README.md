@@ -33,8 +33,12 @@ The full authored composition is allowed to extend behind the lower loading
 interface. The large center dark fade has been removed so it no longer masks the
 artwork. The privacy headline is anchored above the composition, while the
 description, live status, progress line, and Capture / Encrypt / Secure sequence
-are anchored below it with text shadows for contrast. The camera remains fixed
-at the authored front view; orbiting, panning, and zooming are disabled.
+are anchored below it with text shadows for contrast. On mobile, the desktop
+sidebar and earlier bottom bar are removed; only a compact floating upload pill
+appears before import, then disappears for the full-screen experience. The vault
+uses a closer mobile anchor so it stays visually connected to the woman. The
+camera remains fixed at the authored front view; orbiting, panning, and zooming
+are disabled.
 
 The earlier central particle cloud has been removed from the woman. Its single
 efficient `THREE.Points` pool now forms a fading pink, lavender, and white trail

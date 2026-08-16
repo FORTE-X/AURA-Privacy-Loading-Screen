@@ -509,33 +509,33 @@ body {
 
     #loadingScreen {
         position: absolute;
-        inset: 0 0 calc(96px + env(safe-area-inset-bottom)) 0;
+        inset: 0;
         width: 100%;
-        height: auto;
+        height: 100%;
     }
 
     #sidebar {
         position: fixed;
         z-index: 20;
-        right: 0;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        height: calc(96px + env(safe-area-inset-bottom));
-        padding: 12px 14px calc(12px + env(safe-area-inset-bottom));
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) minmax(138px, 0.68fr);
-        gap: 10px;
-        overflow: hidden;
-        border-top: 1px solid rgba(243, 199, 224, 0.13);
+        right: 14px;
+        bottom: calc(14px + env(safe-area-inset-bottom));
+        left: auto;
+        width: auto;
+        height: auto;
+        padding: 0;
+        display: block;
+        overflow: visible;
+        border: 0;
         border-right: 0;
-        background: rgba(11, 9, 16, 0.96);
-        box-shadow: 0 -16px 50px rgba(0, 0, 0, 0.3);
-        backdrop-filter: blur(18px);
+        background: transparent;
+        box-shadow: none;
+        pointer-events: none;
+        backdrop-filter: none;
     }
 
     .sidebar-logo,
     .privacy-card,
+    .model-card,
     .sidebar-card h2,
     .format-help {
         display: none;
@@ -551,38 +551,32 @@ body {
         backdrop-filter: none;
     }
 
-    .model-card,
     .import-card {
         display: flex;
         align-items: center;
-    }
-
-    .model-list {
-        width: 100%;
-    }
-
-    .model-list-empty {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-
-    .model-entry {
-        padding: 9px 10px;
+        pointer-events: auto;
     }
 
     #uploadBtn {
-        height: 58px;
-        padding: 8px 10px;
-        flex-direction: column;
-        gap: 3px;
-        border-radius: 13px;
+        width: 154px;
+        height: 48px;
+        padding: 8px 14px;
+        flex-direction: row;
+        gap: 7px;
+        border-radius: 999px;
         font-size: 10px;
         text-transform: uppercase;
+        box-shadow:
+            0 10px 30px rgba(0, 0, 0, 0.38),
+            0 0 22px rgba(194, 118, 235, 0.24);
     }
 
     .button-icon {
-        font-size: 19px;
+        font-size: 17px;
+    }
+
+    #app:has(#loadingInterface:not([hidden])) #sidebar {
+        display: none;
     }
 
     .brand {
