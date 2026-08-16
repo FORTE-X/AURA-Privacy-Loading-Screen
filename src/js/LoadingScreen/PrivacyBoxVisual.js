@@ -115,8 +115,15 @@ export class PrivacyBoxVisual {
         });
 
         this.visibleHeight = Math.max(size.y, Number.EPSILON);
-        this.arrivalAnchor.position.set(0, size.y * 0.04, size.z * 0.58);
-        this.group.add(model, this.arrivalAnchor);
+        this.group.add(model);
+        model.updateWorldMatrix(true, true);
+
+        const animatedBoxRoot = model.getObjectByName("Empty") || model;
+
+        this.arrivalAnchor.position.copy(
+            animatedBoxRoot.worldToLocal(new THREE.Vector3())
+        );
+        animatedBoxRoot.add(this.arrivalAnchor);
 
         if (gltf.animations.length > 0) {
             this.animationMixer = new THREE.AnimationMixer(model);

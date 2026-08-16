@@ -48,7 +48,9 @@ slow breath applied through the authored emissive material.
 Its invisible `butterflyArrivalAnchor` is the destination hook for the incoming
 privacy-detail butterflies. The authored 3.75-second vault clip is driven by
 the same five-second transfer timeline as the butterflies rather than looping
-independently.
+independently. The arrival anchor is parented to the animated vault root and
+targets the geometric center of the box, so the butterflies enter the center
+even while the vault moves and opens.
 
 `ButterflyStreamVisual.js` loads the authored pink and purple butterfly GLBs
 once, then reuses their geometry, textures, and built-in animation clips. Four
