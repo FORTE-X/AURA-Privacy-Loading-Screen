@@ -9,7 +9,6 @@ export const BUTTERFLY_FLIGHT_DURATION = 3.35;
 export const BUTTERFLY_ARRIVAL_GLOW_DURATION = 0.6;
 export const BUTTERFLY_FLIGHT_SIZE_RATIO = 0.13;
 export const BUTTERFLY_TRANSFER_COUNT = 10;
-export const BUTTERFLY_TRANSFER_STAGGER = 0.16;
 export const BUTTERFLY_WEAVE_HORIZONTAL_RATIO = 0.044;
 export const BUTTERFLY_WEAVE_VERTICAL_RATIO = 0.064;
 export const BUTTERFLY_WEAVE_HOVER_RATIO = 0.02;
@@ -17,14 +16,14 @@ export const BUTTERFLY_AMBIENT_HOVER_RATIO = 0.008;
 export const BUTTERFLY_AMBIENT_DRIFT_RATIO = 0.004;
 export const BUTTERFLY_MOBILE_LAYOUT_WIDTH = 0.82;
 export const BUTTERFLY_ARRIVAL_GLOW_OPACITY = 0.82;
-export const TRAIL_PARTICLE_COUNT_DESKTOP = 360;
-export const TRAIL_PARTICLE_COUNT_MOBILE = 210;
-export const TRAIL_PARTICLES_PER_BUTTERFLY_SECOND = 24;
-export const TRAIL_PARTICLE_SIZE_RATIO = 0.034;
+export const TRAIL_PARTICLE_COUNT_DESKTOP = 600;
+export const TRAIL_PARTICLE_COUNT_MOBILE = 340;
+export const TRAIL_PARTICLES_PER_BUTTERFLY_SECOND = 38;
+export const TRAIL_PARTICLE_SIZE_RATIO = 0.037;
 export const TRAIL_PARTICLE_OPACITY = 1;
-export const TRAIL_PARTICLE_LIFETIME_MIN = 0.78;
-export const TRAIL_PARTICLE_LIFETIME_MAX = 1.45;
-export const TRAIL_PARTICLE_DRIFT_RATIO = 0.035;
+export const TRAIL_PARTICLE_LIFETIME_MIN = 0.95;
+export const TRAIL_PARTICLE_LIFETIME_MAX = 1.85;
+export const TRAIL_PARTICLE_DRIFT_RATIO = 0.042;
 export const TRAIL_PARTICLE_BACKFLOW_RATIO = 0.04;
 export const AMBIENT_SPARKLE_COUNT_DESKTOP = 96;
 export const AMBIENT_SPARKLE_COUNT_MOBILE = 58;
@@ -38,9 +37,9 @@ const AMBIENT_LAYOUT = [
     {
         sourceIndex: 0,
         sizeRatio: 0.034,
-        x: -0.4,
-        y: 0.29,
-        z: 0.72,
+        x: -0.27,
+        y: 0.32,
+        z: 0.68,
         phase: 0.25,
         speed: 0.82,
         clip: "butterflap"
@@ -48,9 +47,9 @@ const AMBIENT_LAYOUT = [
     {
         sourceIndex: 1,
         sizeRatio: 0.046,
-        x: 0.42,
-        y: 0.2,
-        z: 0.78,
+        x: 0.34,
+        y: 0.23,
+        z: 0.84,
         phase: 1.7,
         speed: 0.94,
         clip: "butterflap"
@@ -58,9 +57,9 @@ const AMBIENT_LAYOUT = [
     {
         sourceIndex: 1,
         sizeRatio: 0.039,
-        x: -0.43,
-        y: 0.04,
-        z: 0.82,
+        x: -0.32,
+        y: 0.09,
+        z: 0.9,
         phase: 3.1,
         speed: 0.76,
         clip: "butterflap"
@@ -68,9 +67,9 @@ const AMBIENT_LAYOUT = [
     {
         sourceIndex: 0,
         sizeRatio: 0.052,
-        x: 0.4,
-        y: -0.13,
-        z: 0.76,
+        x: 0.25,
+        y: -0.08,
+        z: 0.7,
         phase: 4.5,
         speed: 1.08,
         clip: "butterflap"
@@ -78,9 +77,9 @@ const AMBIENT_LAYOUT = [
     {
         sourceIndex: 1,
         sizeRatio: 0.03,
-        x: -0.31,
-        y: 0.38,
-        z: 0.74,
+        x: -0.19,
+        y: 0.41,
+        z: 0.79,
         phase: 5.4,
         speed: 0.88,
         clip: "butterflap"
@@ -88,9 +87,9 @@ const AMBIENT_LAYOUT = [
     {
         sourceIndex: 0,
         sizeRatio: 0.041,
-        x: 0.33,
-        y: 0.34,
-        z: 0.8,
+        x: 0.23,
+        y: 0.36,
+        z: 0.93,
         phase: 2.35,
         speed: 1.02,
         clip: "butterflap"
@@ -98,9 +97,9 @@ const AMBIENT_LAYOUT = [
     {
         sourceIndex: 0,
         sizeRatio: 0.028,
-        x: -0.46,
-        y: 0.17,
-        z: 0.7,
+        x: -0.37,
+        y: 0.2,
+        z: 0.75,
         phase: 3.85,
         speed: 0.91,
         clip: "butterflap"
@@ -108,9 +107,9 @@ const AMBIENT_LAYOUT = [
     {
         sourceIndex: 1,
         sizeRatio: 0.036,
-        x: 0.46,
-        y: 0.07,
-        z: 0.83,
+        x: 0.39,
+        y: 0.04,
+        z: 0.88,
         phase: 0.95,
         speed: 1.12,
         clip: "butterflap"
@@ -118,9 +117,9 @@ const AMBIENT_LAYOUT = [
     {
         sourceIndex: 1,
         sizeRatio: 0.043,
-        x: -0.36,
-        y: -0.11,
-        z: 0.79,
+        x: -0.22,
+        y: -0.15,
+        z: 0.86,
         phase: 4.95,
         speed: 0.8,
         clip: "butterflap"
@@ -128,15 +127,26 @@ const AMBIENT_LAYOUT = [
     {
         sourceIndex: 0,
         sizeRatio: 0.032,
-        x: 0.31,
-        y: -0.27,
-        z: 0.73,
+        x: 0.29,
+        y: -0.25,
+        z: 0.72,
         phase: 1.25,
         speed: 0.97,
         clip: "butterflap"
     }
 ];
-const TRANSFER_SIZE_FACTORS = [1, 0.86, 0.78, 0.92, 0.72, 0.82, 0.68, 0.88, 0.75, 0.95];
+const TRANSFER_PROFILES = [
+    { size: 1, delay: 0, launchX: -0.18, launchY: 0.21, depth: 0.01, speedBias: 0.09, arc: 0.02 },
+    { size: 0.86, delay: 0.09, launchX: 0.12, launchY: 0.3, depth: 0.04, speedBias: -0.08, arc: -0.01 },
+    { size: 0.78, delay: 0.24, launchX: -0.07, launchY: 0.05, depth: 0.07, speedBias: 0.13, arc: 0.05 },
+    { size: 0.92, delay: 0.4, launchX: 0.2, launchY: 0.13, depth: 0.02, speedBias: -0.12, arc: -0.04 },
+    { size: 0.72, delay: 0.51, launchX: -0.24, launchY: -0.08, depth: 0.09, speedBias: 0.07, arc: 0.08 },
+    { size: 0.82, delay: 0.68, launchX: 0.07, launchY: -0.19, depth: 0.05, speedBias: -0.05, arc: -0.03 },
+    { size: 0.68, delay: 0.83, launchX: -0.12, launchY: 0.36, depth: 0.1, speedBias: 0.15, arc: 0.04 },
+    { size: 0.88, delay: 0.98, launchX: 0.25, launchY: -0.02, depth: 0.03, speedBias: -0.1, arc: -0.06 },
+    { size: 0.75, delay: 1.16, launchX: -0.03, launchY: -0.3, depth: 0.08, speedBias: 0.1, arc: 0.07 },
+    { size: 0.95, delay: 1.36, launchX: 0.16, launchY: 0.4, depth: 0.06, speedBias: -0.06, arc: 0 }
+];
 const TRAIL_PALETTE = [
     new THREE.Color(0xffd5f5),
     new THREE.Color(0xd59cff),
@@ -166,7 +176,6 @@ export class ButterflyStreamVisual {
         this.hostSize = new THREE.Vector3();
         this.launchPosition = new THREE.Vector3();
         this.targetPosition = new THREE.Vector3();
-        this.controlA = new THREE.Vector3();
         this.controlB = new THREE.Vector3();
         this.cameraRight = new THREE.Vector3();
         this.cameraUp = new THREE.Vector3();
@@ -249,6 +258,7 @@ export class ButterflyStreamVisual {
 
         for (let index = 0; index < BUTTERFLY_TRANSFER_COUNT; index += 1) {
             const source = this.sources[index % this.sources.length];
+            const profile = TRANSFER_PROFILES[index];
             const butterfly = createButterfly(
                 source,
                 ["butterflap", "buttersoar", "butteridle"],
@@ -257,15 +267,19 @@ export class ButterflyStreamVisual {
 
             butterfly.baseScale = hostWorldHeight *
                 BUTTERFLY_FLIGHT_SIZE_RATIO *
-                TRANSFER_SIZE_FACTORS[index] / source.span;
+                profile.size / source.span;
             butterfly.wrapper.visible = false;
             butterfly.mixer.timeScale = 1.08 + (index % 3) * 0.07;
             butterfly.pathPosition = new THREE.Vector3();
             butterfly.nextPathPosition = new THREE.Vector3();
             butterfly.pathTangent = new THREE.Vector3();
+            butterfly.launchPosition = new THREE.Vector3();
+            butterfly.controlA = new THREE.Vector3();
+            butterfly.controlB = new THREE.Vector3();
             butterfly.pathPhase = index / BUTTERFLY_TRANSFER_COUNT *
                 Math.PI * 2;
-            butterfly.startDelay = index * BUTTERFLY_TRANSFER_STAGGER;
+            butterfly.profile = profile;
+            butterfly.startDelay = profile.delay;
             butterfly.glow = createArrivalGlow(
                 this.arrivalGlowTexture,
                 index % this.sources.length === 0 ? 0xff9de8 : 0xba8cff
@@ -362,10 +376,6 @@ export class ButterflyStreamVisual {
         const hostWorldHeight = this.hostSize.y *
             this.hostVisual.object3D.scale.y;
 
-        this.controlA.copy(this.launchPosition)
-            .addScaledVector(this.cameraRight, hostWorldHeight * 0.16)
-            .addScaledVector(this.cameraUp, hostWorldHeight * 0.07)
-            .addScaledVector(this.towardCamera, hostWorldHeight * 0.12);
         this.controlB.copy(this.targetPosition)
             .addScaledVector(this.cameraRight, -hostWorldHeight * 0.1)
             .addScaledVector(this.cameraUp, -hostWorldHeight * 0.07);
@@ -398,8 +408,14 @@ export class ButterflyStreamVisual {
         this.flightButterflies.forEach((butterfly, index) => {
             const activeDuration = BUTTERFLY_FLIGHT_DURATION -
                 butterfly.startDelay;
-            const progress = THREE.MathUtils.clamp(
+            const baseProgress = THREE.MathUtils.clamp(
                 (cycleTime - butterfly.startDelay) / activeDuration,
+                0,
+                1
+            );
+            const progress = THREE.MathUtils.clamp(
+                baseProgress + Math.sin(baseProgress * Math.PI) *
+                    butterfly.profile.speedBias,
                 0,
                 1
             );
@@ -411,16 +427,41 @@ export class ButterflyStreamVisual {
 
             butterfly.wrapper.visible = true;
             butterfly.mixer.update(deltaTime);
+            butterfly.launchPosition.copy(this.launchPosition)
+                .addScaledVector(
+                    this.cameraRight,
+                    hostWorldHeight * butterfly.profile.launchX
+                )
+                .addScaledVector(
+                    this.cameraUp,
+                    hostWorldHeight * butterfly.profile.launchY
+                )
+                .addScaledVector(
+                    this.towardCamera,
+                    hostWorldHeight * butterfly.profile.depth
+                );
+            butterfly.controlA.copy(butterfly.launchPosition)
+                .addScaledVector(
+                    this.cameraRight,
+                    hostWorldHeight * (0.16 + butterfly.profile.arc)
+                )
+                .addScaledVector(this.cameraUp, hostWorldHeight * 0.07)
+                .addScaledVector(this.towardCamera, hostWorldHeight * 0.12);
+            butterfly.controlB.copy(this.controlB)
+                .addScaledVector(
+                    this.cameraUp,
+                    Math.sin(butterfly.pathPhase) * hostWorldHeight * 0.035
+                );
             this.evaluateFlightPath(
                 progress,
-                index,
+                butterfly,
                 elapsedTime,
                 hostWorldHeight,
                 butterfly.pathPosition
             );
             this.evaluateFlightPath(
                 Math.min(progress + 0.012, 1),
-                index,
+                butterfly,
                 elapsedTime + 0.012 * activeDuration,
                 hostWorldHeight,
                 butterfly.nextPathPosition
@@ -490,18 +531,18 @@ export class ButterflyStreamVisual {
         this.privacyBoxVisual.setButterflyProximityGlow(closestProximity);
     }
 
-    evaluateFlightPath(progress, index, elapsedTime, hostHeight, target) {
+    evaluateFlightPath(progress, butterfly, elapsedTime, hostHeight, target) {
         cubicBezier(
-            this.launchPosition,
-            this.controlA,
-            this.controlB,
+            butterfly.launchPosition,
+            butterfly.controlA,
+            butterfly.controlB,
             this.targetPosition,
             easeInOut(progress),
             target
         );
 
         const pathEnvelope = Math.sin(progress * Math.PI);
-        const phase = this.flightButterflies[index]?.pathPhase || 0;
+        const phase = butterfly.pathPhase;
         const switchingWave = Math.sin(
             progress * Math.PI * 3 + phase
         ) * pathEnvelope;

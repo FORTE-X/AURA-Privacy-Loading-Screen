@@ -53,14 +53,16 @@ even while the vault moves and opens.
 
 `ButterflyStreamVisual.js` loads the authored pink and purple butterfly GLBs
 once, then reuses their geometry, textures, and built-in animation clips. Ten
-small, differently sized butterflies flap and hover close to the woman while
-facing inward. A restrained field of 96 desktop (58 mobile) pink and violet
-sparkles remains around the figure between transfers. At five-second intervals,
-ten varied pink and purple butterflies emerge from behind the woman. Their
-staggered departures keep them at clearly different distances across the stream
-while synchronizing their final arrival with the open vault. They follow wider
-perpendicular weaving paths, flap toward the box,
-shrink into its arrival anchor, and leave a denser field of luminous particle
+small, differently sized butterflies flap in an asymmetric close halo around
+the woman, with varied height, depth, and distance while still facing inward. A
+restrained field of 96 desktop (58 mobile) pink and violet sparkles remains
+around the figure between transfers. At five-second intervals, ten varied pink
+and purple butterflies emerge from distinct areas across the upper torso,
+sides, waist, and lower floral region. Individual launch delays, acceleration
+curves, and arc offsets keep them at different distances and speeds across the
+stream while synchronizing their final arrival with the open vault. They follow
+wider perpendicular weaving paths, flap toward the box, shrink into its arrival
+anchor, and leave a much denser single-draw-call field of luminous particle
 trails plus a short colored glow as they disappear. Their
 distance from the box continuously drives its brightness: the box grows
 brighter as they approach, peaks at the opening, and dims back to its brighter
