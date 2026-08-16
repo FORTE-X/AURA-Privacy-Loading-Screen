@@ -263,9 +263,15 @@ body {
     background:
         radial-gradient(
             circle at 72% 50%,
-            rgba(181, 109, 255, 0.11),
-            rgba(122, 72, 174, 0.045) 22%,
-            transparent 43%
+            rgba(242, 207, 255, 0.12),
+            rgba(204, 137, 255, 0.075) 16%,
+            transparent 30%
+        ),
+        radial-gradient(
+            circle at 72% 50%,
+            rgba(181, 109, 255, 0.2),
+            rgba(122, 72, 174, 0.08) 28%,
+            transparent 49%
         ),
         radial-gradient(ellipse at 50% 48%, rgba(75, 39, 91, 0.2), transparent 68%),
         linear-gradient(180deg, #0a0710 0%, #05040a 62%, #020204 100%);
@@ -419,20 +425,78 @@ body {
 }
 
 #loadingStatus {
-    margin-top: 10px;
+    margin-top: 9px;
     color: var(--muted);
-    font-size: 13px;
+    font-size: 11px;
     overflow-wrap: anywhere;
+}
+
+.loading-description {
+    width: min(100%, 390px);
+    margin: 11px auto 0;
+    color: rgba(220, 210, 225, 0.78);
+    font-size: 13px;
+    line-height: 1.55;
 }
 
 .progress-track {
     position: relative;
     width: min(68%, 250px);
     height: 2px;
-    margin: 25px auto 0;
+    margin: 18px auto 0;
     overflow: hidden;
     border-radius: 999px;
     background: rgba(255, 255, 255, 0.08);
+}
+
+.privacy-stages {
+    position: relative;
+    width: min(88%, 330px);
+    margin: 18px auto 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    list-style: none;
+}
+
+.privacy-stages::before {
+    position: absolute;
+    top: 15px;
+    right: 17%;
+    left: 17%;
+    height: 1px;
+    content: "";
+    background: linear-gradient(90deg, #dd89e5, #eec7ff, #9c72ef);
+    box-shadow: 0 0 8px rgba(214, 122, 255, 0.62);
+}
+
+.privacy-stages li {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    gap: 7px;
+    color: rgba(240, 218, 239, 0.78);
+    font-size: 9px;
+    font-weight: 650;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+}
+
+.stage-icon {
+    width: 30px;
+    height: 30px;
+    display: grid;
+    place-items: center;
+    border: 1px solid rgba(229, 158, 247, 0.65);
+    border-radius: 50%;
+    color: #fff1ff;
+    font-size: 13px;
+    background: rgba(12, 6, 18, 0.88);
+    box-shadow:
+        0 0 10px rgba(205, 113, 255, 0.42),
+        inset 0 0 9px rgba(230, 153, 255, 0.13);
 }
 
 .progress-glow {
@@ -549,10 +613,20 @@ body {
 
     .loading-copy {
         bottom: calc(26px + env(safe-area-inset-bottom));
+        width: min(92%, 430px);
     }
 
     .loading-copy::before {
         inset: -30px -18px -24px;
+    }
+
+    .loading-description {
+        width: min(90%, 350px);
+        font-size: 12px;
+    }
+
+    .privacy-stages {
+        margin-top: 14px;
     }
 
     .empty-state {

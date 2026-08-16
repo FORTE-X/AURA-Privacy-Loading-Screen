@@ -7,24 +7,28 @@ export const BUTTERFLY_FLIGHT_INTERVAL = 5;
 export const BUTTERFLY_FIRST_FLIGHT_DELAY = 5;
 export const BUTTERFLY_FLIGHT_DURATION = 3.35;
 export const BUTTERFLY_ARRIVAL_GLOW_DURATION = 0.6;
-export const BUTTERFLY_FLIGHT_SIZE_RATIO = 0.095;
-export const BUTTERFLY_TRANSFER_COUNT = 6;
+export const BUTTERFLY_FLIGHT_SIZE_RATIO = 0.13;
+export const BUTTERFLY_TRANSFER_COUNT = 10;
+export const BUTTERFLY_TRANSFER_STAGGER = 0.16;
 export const BUTTERFLY_WEAVE_HORIZONTAL_RATIO = 0.044;
 export const BUTTERFLY_WEAVE_VERTICAL_RATIO = 0.064;
 export const BUTTERFLY_WEAVE_HOVER_RATIO = 0.02;
 export const BUTTERFLY_AMBIENT_HOVER_RATIO = 0.008;
 export const BUTTERFLY_AMBIENT_DRIFT_RATIO = 0.004;
 export const BUTTERFLY_MOBILE_LAYOUT_WIDTH = 0.82;
-export const BUTTERFLY_ARRIVAL_GLOW_OPACITY = 0.68;
-export const TRAIL_PARTICLE_COUNT_DESKTOP = 184;
-export const TRAIL_PARTICLE_COUNT_MOBILE = 112;
-export const TRAIL_PARTICLES_PER_BUTTERFLY_SECOND = 20;
-export const TRAIL_PARTICLE_SIZE_RATIO = 0.03;
-export const TRAIL_PARTICLE_OPACITY = 0.9;
-export const TRAIL_PARTICLE_LIFETIME_MIN = 0.7;
-export const TRAIL_PARTICLE_LIFETIME_MAX = 1.25;
+export const BUTTERFLY_ARRIVAL_GLOW_OPACITY = 0.82;
+export const TRAIL_PARTICLE_COUNT_DESKTOP = 360;
+export const TRAIL_PARTICLE_COUNT_MOBILE = 210;
+export const TRAIL_PARTICLES_PER_BUTTERFLY_SECOND = 24;
+export const TRAIL_PARTICLE_SIZE_RATIO = 0.034;
+export const TRAIL_PARTICLE_OPACITY = 1;
+export const TRAIL_PARTICLE_LIFETIME_MIN = 0.78;
+export const TRAIL_PARTICLE_LIFETIME_MAX = 1.45;
 export const TRAIL_PARTICLE_DRIFT_RATIO = 0.035;
 export const TRAIL_PARTICLE_BACKFLOW_RATIO = 0.04;
+export const AMBIENT_SPARKLE_COUNT_DESKTOP = 96;
+export const AMBIENT_SPARKLE_COUNT_MOBILE = 58;
+export const AMBIENT_SPARKLE_SIZE_RATIO = 0.018;
 
 const ASSET_URLS = [
     new URL("./assets/pinkbtf.glb", import.meta.url).href,
@@ -70,9 +74,69 @@ const AMBIENT_LAYOUT = [
         phase: 4.5,
         speed: 1.08,
         clip: "butterflap"
+    },
+    {
+        sourceIndex: 1,
+        sizeRatio: 0.03,
+        x: -0.31,
+        y: 0.38,
+        z: 0.74,
+        phase: 5.4,
+        speed: 0.88,
+        clip: "butterflap"
+    },
+    {
+        sourceIndex: 0,
+        sizeRatio: 0.041,
+        x: 0.33,
+        y: 0.34,
+        z: 0.8,
+        phase: 2.35,
+        speed: 1.02,
+        clip: "butterflap"
+    },
+    {
+        sourceIndex: 0,
+        sizeRatio: 0.028,
+        x: -0.46,
+        y: 0.17,
+        z: 0.7,
+        phase: 3.85,
+        speed: 0.91,
+        clip: "butterflap"
+    },
+    {
+        sourceIndex: 1,
+        sizeRatio: 0.036,
+        x: 0.46,
+        y: 0.07,
+        z: 0.83,
+        phase: 0.95,
+        speed: 1.12,
+        clip: "butterflap"
+    },
+    {
+        sourceIndex: 1,
+        sizeRatio: 0.043,
+        x: -0.36,
+        y: -0.11,
+        z: 0.79,
+        phase: 4.95,
+        speed: 0.8,
+        clip: "butterflap"
+    },
+    {
+        sourceIndex: 0,
+        sizeRatio: 0.032,
+        x: 0.31,
+        y: -0.27,
+        z: 0.73,
+        phase: 1.25,
+        speed: 0.97,
+        clip: "butterflap"
     }
 ];
-const TRANSFER_SIZE_FACTORS = [1, 0.86, 0.78, 0.92, 0.72, 0.82];
+const TRANSFER_SIZE_FACTORS = [1, 0.86, 0.78, 0.92, 0.72, 0.82, 0.68, 0.88, 0.75, 0.95];
 const TRAIL_PALETTE = [
     new THREE.Color(0xffd5f5),
     new THREE.Color(0xd59cff),
@@ -82,7 +146,7 @@ const TRAIL_PALETTE = [
 
 const gltfLoader = new GLTFLoader();
 
-/** Four ambient butterflies plus a six-butterfly privacy-box transfer loop. */
+/** Ten ambient butterflies plus a staggered ten-butterfly transfer loop. */
 export class ButterflyStreamVisual {
 
     constructor(camera, hostVisual, privacyBoxVisual) {
@@ -95,6 +159,7 @@ export class ButterflyStreamVisual {
         this.ambientButterflies = [];
         this.flightButterflies = [];
         this.particleTrail = null;
+        this.ambientSparkles = null;
         this.arrivalGlowTexture = null;
         this.lastFlightCycle = -1;
         this.timelineStart = null;
@@ -175,6 +240,9 @@ export class ButterflyStreamVisual {
             this.ambientButterflies.push(butterfly);
         });
 
+        this.ambientSparkles = createAmbientSparkles(this.hostSize);
+        hostLayer.add(this.ambientSparkles.points);
+
         this.arrivalGlowTexture = createArrivalGlowTexture();
         const hostWorldHeight = this.hostSize.y *
             this.hostVisual.object3D.scale.y;
@@ -197,6 +265,7 @@ export class ButterflyStreamVisual {
             butterfly.pathTangent = new THREE.Vector3();
             butterfly.pathPhase = index / BUTTERFLY_TRANSFER_COUNT *
                 Math.PI * 2;
+            butterfly.startDelay = index * BUTTERFLY_TRANSFER_STAGGER;
             butterfly.glow = createArrivalGlow(
                 this.arrivalGlowTexture,
                 index % this.sources.length === 0 ? 0xff9de8 : 0xba8cff
@@ -216,6 +285,7 @@ export class ButterflyStreamVisual {
         if (this.disposed || !this.initialized) return;
 
         this.updateAmbientButterflies(deltaTime, elapsedTime);
+        updateAmbientSparkles(this.ambientSparkles, elapsedTime);
         updateParticleTrail(this.particleTrail, deltaTime);
         this.updateTransferButterfly(deltaTime, elapsedTime);
     }
@@ -323,14 +393,22 @@ export class ButterflyStreamVisual {
             return;
         }
 
-        const progress = THREE.MathUtils.clamp(
-            cycleTime / BUTTERFLY_FLIGHT_DURATION,
-            0,
-            1
-        );
         let closestProximity = 0;
 
         this.flightButterflies.forEach((butterfly, index) => {
+            const activeDuration = BUTTERFLY_FLIGHT_DURATION -
+                butterfly.startDelay;
+            const progress = THREE.MathUtils.clamp(
+                (cycleTime - butterfly.startDelay) / activeDuration,
+                0,
+                1
+            );
+            const launched = cycleTime >= butterfly.startDelay;
+
+            butterfly.wrapper.visible = launched;
+            butterfly.glow.visible = false;
+            if (!launched) return;
+
             butterfly.wrapper.visible = true;
             butterfly.mixer.update(deltaTime);
             this.evaluateFlightPath(
@@ -343,7 +421,7 @@ export class ButterflyStreamVisual {
             this.evaluateFlightPath(
                 Math.min(progress + 0.012, 1),
                 index,
-                elapsedTime + 0.012 * BUTTERFLY_FLIGHT_DURATION,
+                elapsedTime + 0.012 * activeDuration,
                 hostWorldHeight,
                 butterfly.nextPathPosition
             );
@@ -477,6 +555,7 @@ export class ButterflyStreamVisual {
             }
         );
         this.arrivalGlowTexture?.dispose();
+        disposeAmbientSparkles(this.ambientSparkles);
         disposeParticleTrail(this.particleTrail);
         this.sources.forEach((source) => disposeObject3D(source.scene));
         this.group.removeFromParent();
@@ -485,10 +564,85 @@ export class ButterflyStreamVisual {
         this.ambientButterflies.length = 0;
         this.flightButterflies.length = 0;
         this.arrivalGlowTexture = null;
+        this.ambientSparkles = null;
         this.particleTrail = null;
         this.privacyBoxVisual.setButterflyProximityGlow(0);
         this.initialized = false;
     }
+}
+
+function createAmbientSparkles(hostSize) {
+    const count = window.matchMedia("(max-width: 760px)").matches
+        ? AMBIENT_SPARKLE_COUNT_MOBILE
+        : AMBIENT_SPARKLE_COUNT_DESKTOP;
+    const positions = new Float32Array(count * 3);
+    const colors = new Float32Array(count * 3);
+    let randomState = 0x5ab47d31;
+
+    const random = () => {
+        randomState ^= randomState << 13;
+        randomState ^= randomState >>> 17;
+        randomState ^= randomState << 5;
+        randomState >>>= 0;
+        return randomState / 4294967296;
+    };
+
+    for (let index = 0; index < count; index += 1) {
+        const offset = index * 3;
+        const side = random() < 0.5 ? -1 : 1;
+        const radius = THREE.MathUtils.lerp(0.16, 0.58, random());
+        const color = TRAIL_PALETTE[index % TRAIL_PALETTE.length];
+
+        positions[offset] = hostSize.x * radius * side;
+        positions[offset + 1] = hostSize.y *
+            THREE.MathUtils.lerp(-0.38, 0.46, random());
+        positions[offset + 2] = hostSize.z *
+            THREE.MathUtils.lerp(0.64, 0.88, random());
+        colors[offset] = color.r;
+        colors[offset + 1] = color.g;
+        colors[offset + 2] = color.b;
+    }
+
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+    geometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
+
+    const material = new THREE.PointsMaterial({
+        map: createParticleTexture(),
+        size: hostSize.y * AMBIENT_SPARKLE_SIZE_RATIO,
+        sizeAttenuation: true,
+        transparent: true,
+        opacity: 0.62,
+        vertexColors: true,
+        depthTest: false,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+        toneMapped: false
+    });
+    const points = new THREE.Points(geometry, material);
+
+    points.name = "Ambient privacy sparkles";
+    points.renderOrder = 8;
+    points.frustumCulled = false;
+
+    return { points, material };
+}
+
+function updateAmbientSparkles(sparkles, elapsedTime) {
+    if (!sparkles) return;
+
+    sparkles.material.opacity = 0.5 +
+        Math.sin(elapsedTime * 1.7) * 0.12;
+    sparkles.points.rotation.z = Math.sin(elapsedTime * 0.16) * 0.012;
+}
+
+function disposeAmbientSparkles(sparkles) {
+    if (!sparkles) return;
+
+    sparkles.points.removeFromParent();
+    sparkles.points.geometry.dispose();
+    sparkles.material.map?.dispose();
+    sparkles.material.dispose();
 }
 
 function createParticleTrail(hostWorldHeight) {
