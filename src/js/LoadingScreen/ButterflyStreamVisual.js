@@ -228,6 +228,7 @@ export class ButterflyStreamVisual {
         const timeline = elapsedTime - this.timelineStart;
 
         if (timeline < BUTTERFLY_FIRST_FLIGHT_DELAY) {
+            this.privacyBoxVisual.setTransferCycleTime(0);
             this.privacyBoxVisual.setButterflyProximityGlow(0);
             this.hideFlightButterflies();
             return;
@@ -236,6 +237,8 @@ export class ButterflyStreamVisual {
         const repeatingTime = timeline - BUTTERFLY_FIRST_FLIGHT_DELAY;
         const cycle = Math.floor(repeatingTime / BUTTERFLY_FLIGHT_INTERVAL);
         const cycleTime = repeatingTime - cycle * BUTTERFLY_FLIGHT_INTERVAL;
+
+        this.privacyBoxVisual.setTransferCycleTime(cycleTime);
 
         if (cycle !== this.lastFlightCycle) this.beginFlight(cycle);
 

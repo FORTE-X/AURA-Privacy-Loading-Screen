@@ -11,6 +11,7 @@ export const PRIVACY_BOX_SCREEN_HEIGHT_MOBILE = 0.17;
 export const PRIVACY_BOX_CAMERA_DISTANCE = 4.2;
 export const PRIVACY_BOX_HOVER_AMPLITUDE = 0.008;
 export const PRIVACY_BOX_HOVER_SPEED = 1.05;
+export const PRIVACY_BOX_ANIMATION_START_DELAY = 1.25;
 export const PRIVACY_BOX_BREATH_SPEED = 0.82;
 export const PRIVACY_BOX_GLOW_MIN = 0.248;
 export const PRIVACY_BOX_GLOW_MAX = 0.416;
@@ -27,6 +28,7 @@ export class PrivacyBoxVisual {
         this.group = new THREE.Group();
         this.group.name = "Floating privacy safe box";
         this.animationMixer = null;
+        this.animationDuration = 0;
         this.arrivalAnchor = new THREE.Object3D();
         this.arrivalAnchor.name = "Butterfly arrival anchor";
         this.emissiveMaterials = [];
@@ -55,6 +57,18 @@ export class PrivacyBoxVisual {
 
     setButterflyProximityGlow(strength) {
         this.butterflyProximityGlow = THREE.MathUtils.clamp(strength, 0, 1);
+    }
+
+    setTransferCycleTime(cycleTime) {
+        if (!this.animationMixer || this.animationDuration <= 0) return;
+
+        const authoredTime = THREE.MathUtils.clamp(
+            cycleTime - PRIVACY_BOX_ANIMATION_START_DELAY,
+            0,
+            Math.max(0, this.animationDuration - 0.0001)
+        );
+
+        this.animationMixer.setTime(authoredTime);
     }
 
     async initialize() {
@@ -106,9 +120,13 @@ export class PrivacyBoxVisual {
 
         if (gltf.animations.length > 0) {
             this.animationMixer = new THREE.AnimationMixer(model);
+            this.animationDuration = Math.max(
+                ...gltf.animations.map((clip) => clip.duration)
+            );
             gltf.animations.forEach((clip) => {
                 this.animationMixer.clipAction(clip).play();
             });
+            this.setTransferCycleTime(0);
         }
 
         this.loaded = true;
@@ -117,10 +135,8 @@ export class PrivacyBoxVisual {
         return true;
     }
 
-    update(deltaTime, elapsedTime) {
+    update(_deltaTime, elapsedTime) {
         if (this.disposed || !this.loaded) return;
-
-        this.animationMixer?.update(Math.max(0, deltaTime));
 
         const isMobile = this.mobileViewport.matches;
         const screenHeight = isMobile
@@ -185,6 +201,7 @@ export class PrivacyBoxVisual {
         this.animationMixer?.stopAllAction();
         this.animationMixer?.uncacheRoot(this.animationMixer.getRoot());
         this.animationMixer = null;
+        this.animationDuration = 0;
         this.group.removeFromParent();
         disposeObject3D(this.group);
         this.group.clear();

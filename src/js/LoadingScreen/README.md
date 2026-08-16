@@ -46,7 +46,9 @@ opacity, roughness, and emissive textures intact. It remains screen-anchored in
 the upper-right while the central artwork animates, with a gentle hover and a
 slow breath applied through the authored emissive material.
 Its invisible `butterflyArrivalAnchor` is the destination hook for the incoming
-privacy-detail butterflies that will be added in the next iteration.
+privacy-detail butterflies. The authored 3.75-second vault clip is driven by
+the same five-second transfer timeline as the butterflies rather than looping
+independently.
 
 `ButterflyStreamVisual.js` loads the authored pink and purple butterfly GLBs
 once, then reuses their geometry, textures, and built-in animation clips. Four
@@ -56,8 +58,10 @@ from behind the woman. They weave past one another, flap toward the box, shrink
 into its arrival anchor, and leave a short colored glow as they disappear. Their
 distance from the box continuously drives its brightness: the box grows
 brighter as they approach, peaks at the opening, and dims back to its brighter
-baseline breathing glow as they disappear. The safe box remains camera-anchored
-and does not inherit the woman's rotation.
+baseline breathing glow as they disappear. The vault animation begins 1.25
+seconds into each flight, placing the 3.35-second butterfly arrival inside the
+door's fully open interval; the door then closes during the arrival glow. The
+safe box remains camera-anchored and does not inherit the woman's rotation.
 
 The build copies everything in `assets/` to the same stable path under `dist`.
 This avoids bundler-specific GLB URL rewriting and is the convention for future
